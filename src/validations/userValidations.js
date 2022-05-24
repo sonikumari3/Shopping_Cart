@@ -35,3 +35,12 @@ check('password')
 .isLength({ min: 8, max: 15})
 .withMessage(' Password must be within 8 to 15 characters long'),
 ]
+
+
+exports.userResults = async (req, res, next)=>{
+    try{
+
+    } catch(err){
+        return res.status(500).send({status : false, message : err.message})
+    }
+}
