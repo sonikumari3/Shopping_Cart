@@ -3,6 +3,7 @@ const aws = require('aws-sdk')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
+const decoded = require('../middleware/auth')
 
 
 const isValidRequestBody = function (value) {
@@ -215,7 +216,7 @@ const isValidRequestBody = function (value) {
         
     }
      catch (error) {
-        return res.status(500).send({ status: "error", message: error.message })      
+        return res.status(500).send({ status: false, message: error.message })      
     }
 }
 
@@ -272,7 +273,7 @@ const logIn = async(req,res)=>{
 
     }
     catch (error) {
-        return res.status(500).send({ status: "error", message: error.message })      
+        return res.status(500).send({ status: false, message: error.message })      
     }
 }
 
@@ -299,11 +300,26 @@ const findProfile = async (req,res)=>{
 
     }
     catch (error) {
-        return res.status(500).send({ status: "error", message: error.message })      
+        return res.status(500).send({ status: false, message: error.message })      
     }
 }
 
+const updateProfile = async (req,res)=>{
+    try{
+       let data = req.body
+       let id = req.params
 
+       if(!id){
+           return res.status(400).send({status : false, message : "User id is required to do this action"})
+       }
+
+       let findUser = await user.findOne({_id : id})
+
+    }
+    catch (error) {
+        return res.status(500).send({ status: false, message: error.message })      
+    }
+}
 
 
 module.exports = {createUser, logIn, findProfile }
