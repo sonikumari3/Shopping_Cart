@@ -109,7 +109,7 @@ const createUser =async (req,res)=>{
         }
 
         const salt=await bcrypt.genSalt(10)
-        data.password-await bcrypt.hash(data.password,salt)
+        data.password = await bcrypt.hash(data.password,salt)
 
 
         //Phone Validations--
