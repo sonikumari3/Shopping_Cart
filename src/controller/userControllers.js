@@ -55,17 +55,7 @@ const createUser =async (req,res)=>{
 
     try {
         let data = req.body
-        let file= req.files
-        console.log(file)
-        if(file && file.length>0){
-           
-            let uploadedFileURL= await uploadFile( file[0] )
-           
-            data["profileImage"]=uploadedFileURL
-        }
-        else{
-            return res.status(400).send({ msg: "No file found" })
-        }
+       
 
         if (!isValidRequestBody(data)) {
             res.status(400).send({ status: false, message: "invalid request parameters.plzz provide user details" })
@@ -215,6 +205,18 @@ const createUser =async (req,res)=>{
                     return res.status(400).send({ status: false, message: "plz enter valid  billing pincode" });
                 }
                 data.address=JSON.parse(data.address)
+
+                let file= req.files
+                console.log(file)
+                if(file && file.length>0){
+                   
+                    let uploadedFileURL= await uploadFile( file[0] )
+                   
+                    data["profileImage"]=uploadedFileURL
+                }
+                else{
+                    return res.status(400).send({ msg: "No file found" })
+                }
 
         let saveData = await user.create(data)
         return res.status(201).send({ status: true, message: "success", data: saveData })
