@@ -145,14 +145,7 @@ const isValidRequestBody = function (value) {
                 if (typeof shipping != "object") {
                     return res.status(400).send({ status: false, message: "shipping should be an object" })
                 }
-            if(!billing){
-                return res.status(400).send({ status: false, message: "billing is required" })
-            }
-    
-                if (typeof billing != "object") {
-                    return res.status(400).send({ status: false, message: "billing should be an object" })
-                }
-            
+
                 if (!isValid(shipping.street)) {
                     return res.status(400).send({ status: false, message: "shipping street is required" })
                 }
@@ -172,6 +165,15 @@ const isValidRequestBody = function (value) {
                  //applicable only for numeric values and extend to be 6 characters only--
                 if (!/^\d{6}$/.test(shipping.pincode)) {
                     return res.status(400).send({ status: false, message: "plz enter valid pincode" });
+                }
+
+                
+            if(!billing){
+                return res.status(400).send({ status: false, message: "billing is required" })
+            }
+    
+                if (typeof billing != "object") {
+                    return res.status(400).send({ status: false, message: "billing should be an object" })
                 }
 
                 if (!isValid(billing.street)) {
