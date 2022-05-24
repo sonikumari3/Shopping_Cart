@@ -55,7 +55,6 @@ const createUser =async (req,res)=>{
 
     try {
         let data = req.body
-       
 
         if (!isValidRequestBody(data)) {
             res.status(400).send({ status: false, message: "invalid request parameters.plzz provide user details" })
@@ -110,7 +109,7 @@ const createUser =async (req,res)=>{
         }
 
         const salt=await bcrypt.genSalt(10)
-        data.password-await bcrypt.hash(data.password,salt)
+        data.password = await bcrypt.hash(data.password,salt)
 
 
         //Phone Validations--
@@ -206,17 +205,17 @@ const createUser =async (req,res)=>{
                 }
                 data.address=JSON.parse(data.address)
 
-                let file= req.files
-                console.log(file)
-                if(file && file.length>0){
+        let file= req.files
+        console.log(file)
+        if(file && file.length>0){
                    
-                    let uploadedFileURL= await uploadFile( file[0] )
+        let uploadedFileURL= await uploadFile( file[0] )
                    
-                    data["profileImage"]=uploadedFileURL
-                }
-                else{
-                    return res.status(400).send({ msg: "No file found" })
-                }
+        data["profileImage"]=uploadedFileURL
+        }
+        else{
+            return res.status(400).send({ msg: "No file found" })
+        }
 
         let saveData = await user.create(data)
         return res.status(201).send({ status: true, message: "success", data: saveData })
@@ -260,7 +259,7 @@ const logIn = async(req,res)=>{
         return res.status(404).send({ status: false, message: "an account with this email does not exists" })
      }
 
-     let comparePassword = await bcrypt.compare( this.password, emailExt.password)
+     let comparePassword = await bcrypt.compare(password, emailExt.password)
 
      if(!comparePassword){
        return res.status(400).send({status : false, message : "Please provide a valid password"})
