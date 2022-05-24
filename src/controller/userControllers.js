@@ -19,10 +19,6 @@ const isValid = (value) => {
   }
   
  
-  
-  
-
-
 const createUser =async (req,res)=>{
 
     try {
