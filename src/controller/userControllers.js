@@ -53,17 +53,6 @@ const isValidRequestBody = function (value) {
 
     try {
         let data = req.body
-        let file= req.files
-        console.log(file)
-        if(file && file.length>0){
-           
-            let uploadedFileURL= await uploadFile( file[0] )
-           
-            data["profileImage"]=uploadedFileURL
-        }
-        else{
-            return res.status(400).send({ msg: "No file found" })
-        }
 
         if (!isValidRequestBody(data)) {
             res.status(400).send({ status: false, message: "invalid request parameters.plzz provide user details" })
@@ -104,7 +93,7 @@ const isValidRequestBody = function (value) {
         }
 
         email = email.toLowerCase().trim()
-        const emailExt = await userModel.findOne({ email: email })
+        const emailExt = await user.findOne({ email: email })
         if (emailExt) {
             return res.status(409).send({ status: false, message: "Email already exists" })
         }
@@ -131,7 +120,7 @@ const isValidRequestBody = function (value) {
             return res.status(400).send({ status: false, message: "Please enter valid 10 digit mobile number." })
         }
 
-        const phoneExt = await userModel.findOne({ phone: phone })
+        const phoneExt = await user.findOne({ phone: phone })
         if (phoneExt) {
             return res.status(409).send({ status: false, message: "phone number already exists" })
         }
@@ -139,6 +128,7 @@ const isValidRequestBody = function (value) {
         //for address--
 
         // this validation will check the address is in the object format or not--
+
         if(!address){
             return res.status(400).send({ status: false, message: "address is required" })
         }
@@ -146,7 +136,7 @@ const isValidRequestBody = function (value) {
             if (typeof address != "object") {
                 return res.status(400).send({ status: false, message: "address should be an object" })
             }
-            let { shipping,billing} = address
+            let { shipping, billing} = address
 
             if(!shipping){
                 return res.status(400).send({ status: false, message: "shipping is required" })
@@ -205,8 +195,20 @@ const isValidRequestBody = function (value) {
                 if (!/^\d{6}$/.test(billing.pincode)) {
                     return res.status(400).send({ status: false, message: "plz enter valid  billing pincode" });
                 }
+        
+                let file= req.files
+                console.log(file)
+                if(file && file.length>0){
+                   
+                    let uploadedFileURL= await uploadFile( file[0] )
+                   
+                    data["profileImage"]= uploadedFileURL
+                }
+                else{
+                    return res.status(400).send({ status : false,  message: "No file found" })
+                }
 
-        let saveData = await userModel.create(data)
+        let saveData = await user.create(data)
         return res.status(201).send({ status: true, message: "success", data: saveData })
         
     }
