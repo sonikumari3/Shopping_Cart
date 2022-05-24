@@ -56,7 +56,7 @@ const createUser =async (req,res)=>{
         if (!isValid(email)) {
             return res.status(400).send({ status: false, message: "plzz enter email" })
         }
-        const emailPattern = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})/       //email regex validation for validate the type of email.
+        const emailPattern = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})/g       //email regex validation for validate the type of email.
 
         if (!email.match(emailPattern)) {
             return res.status(400).send({ status: false, message: "This is not a valid email" })
@@ -132,7 +132,6 @@ const createUser =async (req,res)=>{
                     return res.status(400).send({ status: false, message: "shipping street is required" })
                 }
 
-
                 if (!isValid(shipping.city)) {
                     return res.status(400).send({ status: false, message: "shipping city is required" })
                 }
@@ -182,7 +181,7 @@ const createUser =async (req,res)=>{
         data["profileImage"]=uploadedFileURL
         }
         else{
-            return res.status(400).send({ msg: "No file found" })
+            return res.status(400).send({status : false,  message: "No file found" })
         }
 
         let saveData = await user.create(data)
@@ -202,7 +201,7 @@ const logIn = async(req,res)=>{
       let data = req.body
       let {email, password} = data
 
-      if(!email || email.length == 0){
+      if(!email || email.trim().length == 0){
           return res.status(400).send({status : false, message : "Email must be provide"})
       }
 
