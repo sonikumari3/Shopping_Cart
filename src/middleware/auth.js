@@ -1,10 +1,10 @@
-const { LexModelBuildingService } = require('aws-sdk')
+
 const jwt = require('jsonwebtoken')
 let secretKey = 'vjfjdaehvkxfpekfpekfojdsopfjsdaoifji'
 
 const authentication = function(req,res,next){
     try{
-       let token = req.header['x-api-key']
+       let token = req.headers['x-api-key']
 
        if(!token){
            return res.status(400).send({status : false, message : "You are not logged in, please logIn"})

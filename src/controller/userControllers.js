@@ -1,8 +1,8 @@
 const user = require('../model/userModel')
-const aws = require('aws-sdk')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
+const { uploadFile } = require('../middleware/aws')
 
 
 
@@ -11,7 +11,7 @@ const isValidRequestBody = function (value) {
   }
   
   //validaton check for the type of Value --
-  const isValid = (value) => {
+const isValid = (value) => {
     if (typeof value == 'undefined' || value == null) return false;
     if (typeof value == 'string' && value.trim().length == 0) return false;
     if (typeof value === 'number'&&value.toString().trim().length===0) return false;
@@ -19,38 +19,6 @@ const isValidRequestBody = function (value) {
   }
   
  
-  
-  
-  aws.config.update({
-    accessKeyId: "AKIAY3L35MCRUJ6WPO6J",
-    secretAccessKey: "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",
-    region: "ap-south-1"
-  })
-  
-  let uploadFile = async (file) => {
-    return new Promise(function (resolve, reject) {
-      
-      let s3 = new aws.S3({ apiVersion: '2006-03-01' }); 
-  
-      var uploadParams = {
-        ACL: "public-read",
-        Bucket: "classroom-training-bucket",  
-        Key: "abc/" + file.originalname, 
-        Body: file.buffer
-      }
-  
-  
-      s3.upload(uploadParams, function (err, data) {
-        if (err) {
-          return reject({ "error": err })
-        }
-        console.log(data)
-        console.log("file uploaded succesfully")
-        return resolve(data.Location)
-      })
-   })
-  }
-
 const createUser =async (req,res)=>{
 
     try {
@@ -88,7 +56,7 @@ const createUser =async (req,res)=>{
         if (!isValid(email)) {
             return res.status(400).send({ status: false, message: "plzz enter email" })
         }
-        const emailPattern = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})/       //email regex validation for validate the type of email.
+        const emailPattern = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})/g       //email regex validation for validate the type of email.
 
         if (!email.match(emailPattern)) {
             return res.status(400).send({ status: false, message: "This is not a valid email" })
@@ -164,7 +132,6 @@ const createUser =async (req,res)=>{
                     return res.status(400).send({ status: false, message: "shipping street is required" })
                 }
 
-
                 if (!isValid(shipping.city)) {
                     return res.status(400).send({ status: false, message: "shipping city is required" })
                 }
@@ -209,12 +176,12 @@ const createUser =async (req,res)=>{
         console.log(file)
         if(file && file.length>0){
                    
-        let uploadedFileURL= await uploadFile( file[0] )
+        let uploadedFileURL= await uploadFile(file[0])
                    
         data["profileImage"]=uploadedFileURL
         }
         else{
-            return res.status(400).send({ msg: "No file found" })
+            return res.status(400).send({status : false,  message: "No file found" })
         }
 
         let saveData = await user.create(data)
@@ -234,7 +201,7 @@ const logIn = async(req,res)=>{
       let data = req.body
       let {email, password} = data
 
-      if(!email || email.length == 0){
+      if(!email || email.trim().length == 0){
           return res.status(400).send({status : false, message : "Email must be provide"})
       }
 
@@ -262,7 +229,7 @@ const logIn = async(req,res)=>{
      let comparePassword = await bcrypt.compare(password, emailExt.password)
 
      if(!comparePassword){
-       return res.status(400).send({status : false, message : "Please provide a valid password"})
+       return res.status(400).send({status : false, message : "Please provide right password"})
      }else{
          let params = {
              userId : emailExt._id,
@@ -271,7 +238,7 @@ const logIn = async(req,res)=>{
 
          let secretKey = 'vjfjdaehvkxfpekfpekfojdsopfjsdaoifji'
 
-        let token = jwt.sign(params, secretKey)
+        let token = jwt.sign(params, secretKey, {expiresIn : '2h'})
 
         res.header('x-api-key', token)
 
