@@ -205,7 +205,7 @@ const isValidRequestBody = function (value) {
                     data["profileImage"]= uploadedFileURL
                 }
                 else{
-                    return res.status(400).send({ status : false,  message: "No file found" })
+                    return res.status(400).send({ status : false, message: "No file found" })
                 }
 
         let saveData = await user.create(data)
