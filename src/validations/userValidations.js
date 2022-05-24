@@ -38,9 +38,8 @@ check('password')
 
 
 exports.userResults = async (req, res, next)=>{
-    try{
+    const error = validationResult(req).array()
+    if(!error.length) return next()
 
-    } catch(err){
-        return res.status(500).send({status : false, message : err.message})
-    }
+    res.status(400).send({status : false, msg: error[0].msg})
 }
