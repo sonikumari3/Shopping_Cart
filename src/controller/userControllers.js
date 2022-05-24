@@ -2,6 +2,7 @@ const user = require('../model/userModel')
 const aws = require('aws-sdk')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const mongoose = require('mongoose')
 
 
 const isValidRequestBody = function (value) {
@@ -274,3 +275,35 @@ const logIn = async(req,res)=>{
         return res.status(500).send({ status: "error", message: error.message })      
     }
 }
+
+
+const findProfile = async (req,res)=>{
+    try{
+       let userId = req.params
+
+       if(!userId){
+           return res.status(400).send({status : false, message : "User ID is required to do this action"})
+       }
+
+       if(!mongoose.isValidObjectId(userId)){
+          return res.status(400).send({status : false, message : "User ID is required to do this action"})
+       }
+       
+       let findUser = await user.findOne({_id : userId})
+
+       if(!findUser){
+        return res.status(404).send({status : false, message : "no user with this id exists"})
+       }else{
+           return res.status(200).send({status : false, message : "success", data : findUser})
+       }
+
+    }
+    catch (error) {
+        return res.status(500).send({ status: "error", message: error.message })      
+    }
+}
+
+
+
+
+module.exports = {createUser, logIn, findProfile }
