@@ -33,33 +33,7 @@ check('password')
 .not()
 .isEmpty().withMessage('password is Missing')
 .isLength({ min: 8, max: 15})
-.withMessage(' Password must be within 8 to 15 characters long'),
-
-check('address')
-.trim()
-.not()
-.isEmpty('Address is missing'),
-
-check('adddress.shipping.street')
-.trim()
-.not()
-.isEmpty()
-.withMessage('shipping street  must be present'),
-
-check('adddress.shipping.city')
-.trim()
-.not()
-.isEmpty()
-.withMessage('shipping city  must be present')
-.matches(/^[a-zA-Z]+$/g)
-.withMessage('Only alphabets are allowed in city name'),
-
-check('address.shipping.pincode')
-.not()
-.isEmpty()
-.withMessage('Shipping Pincode is required')
-.matches(/^\d{6}$/g)
-.withMessage('Please provide a valid pincode')]
+.withMessage(' Password must be within 8 to 15 characters long')]
 
 
 exports.userResults = async (req, res, next)=>{

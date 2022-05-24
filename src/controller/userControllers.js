@@ -314,7 +314,8 @@ const updateProfile = async (req,res)=>{
        }
 
        let findUser = await user.findOne({_id : id})
-
+       
+       
     }
     catch (error) {
         return res.status(500).send({ status: false, message: error.message })      
