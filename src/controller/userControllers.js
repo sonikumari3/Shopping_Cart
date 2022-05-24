@@ -1,5 +1,6 @@
 const user = require('../model/userModel')
 const aws = require('aws-sdk')
+const bcrypt = require('bcrypt')
 
 
 const isValidRequestBody = function (value) {
@@ -116,8 +117,8 @@ const isValidRequestBody = function (value) {
             return res.status(400).send({ status: false, message: "plzz enter valid password" })
         }
 
-        const salt=await bcrypt.genSalt(10)
-        data.password-await bcrypt.hash(data.password,salt)
+        const salt = await bcrypt.genSalt(10)
+        data.password = await bcrypt.hash(data.password, salt)
 
 
         //Phone Validations--
@@ -165,7 +166,6 @@ const isValidRequestBody = function (value) {
                 if (!isValid(shipping.street)) {
                     return res.status(400).send({ status: false, message: "shipping street is required" })
                 }
-
 
                 if (!isValid(shipping.city)) {
                     return res.status(400).send({ status: false, message: "shipping city is required" })

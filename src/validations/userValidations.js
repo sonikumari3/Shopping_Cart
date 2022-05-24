@@ -44,9 +44,7 @@ check('adddress.shipping.street')
 .trim()
 .not()
 .isEmpty()
-.withMessage('shipping street  must be present')
-.matches(/^[a-zA-Z]+$/g)
-.withMessage('Only alphabets are allowed in street name'),
+.withMessage('shipping street  must be present'),
 
 check('adddress.shipping.city')
 .trim()
