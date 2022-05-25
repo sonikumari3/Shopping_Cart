@@ -411,7 +411,7 @@ const updateProfile = async (req,res)=>{
         if (same) return res.status(400).send({ status: false, msg: "password is same as the last one, try another password or login again" });
 
         const salt=await bcrypt.genSalt(10)
-        password = await bcrypt.hash(password, salt);
+        data.password = await bcrypt.hash(password, salt);
        }
 
        if(address){

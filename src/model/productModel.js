@@ -25,5 +25,44 @@ const productSchema = new mongoose.Schema({
         trim : true
     },
 
-    
-})
+    currencyFormat : {
+        type : String,
+        required : true,
+        trim : true
+    },
+
+    isFreeShipping : {
+        type : Boolean,
+        default : false
+    },
+
+    productImage : {
+        type : String,
+        required : true
+    },
+
+    style : {
+        type : String
+    },
+
+    availableSize : {
+        type : [String],
+        enum : ['S', 'XS', 'M', 'XL','L', 'XXL', 'X']
+    },
+
+    installement : {
+        type : Number
+    },
+
+    deletedAt : {
+        type : Date
+    },
+
+    isDeleted : {
+        type : Boolean,
+        default : false
+    }
+}, {timestamps : true})
+
+
+module.exports = new mongoose.model('product', productSchema)
