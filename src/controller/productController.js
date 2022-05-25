@@ -124,7 +124,7 @@ const createProduct = async (req,res)=>{
 
 const getProductbyQuery = async (req,res)=>{
     try{
-        
+
 
     }
     catch (error) {
@@ -155,7 +155,12 @@ const getProductByID = async (req,res)=>{
 
         if(!findProduct){
             return res.status(404).send({status : false, message : "No product with this id exists"})
-        }else{
+        }
+        
+        if(findProduct.isDeleted){
+            return res.status(404).send({status : false, message : "This product does not exists anymore"})
+        }
+        else{
             return res.status(200).send({status : true, message : "success", data : findProduct})
         }
 
