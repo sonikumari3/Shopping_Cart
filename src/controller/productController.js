@@ -1,6 +1,7 @@
 const product = require('../model/productModel')
 const {isValidRequestBody, isValid} = require("../validations/validations")
 const {uploadFile} = require("../middleware/aws")
+const { default: mongoose } = require('mongoose')
 
 
 const createProduct = async (req,res)=>{
@@ -121,8 +122,48 @@ const createProduct = async (req,res)=>{
 }
 
 
+const getProductbyQuery = async (req,res)=>{
+    try{
+        
+
+    }
+    catch (error) {
+        return res.status(500).send({ status: false, message: error.message })      
+    }
+}
+
+
+const getProductByID = async (req,res)=>{
+    try{
+        let productID = req.params.productId
+        let data =req.params
+
+        if(!isValidRequestBody(data)){
+            return res.status(400).send({status : false, message : "Please Provide some Input"})
+        }
+
+        if(!productID){
+            return res.status(400).send({status : false, message : "product Id must be present to do this action"})
+        }
+        
+        let verifyId = mongoose.isValidObjectId(productID)
+        if(!verifyId){
+            return res.status(400).send({status : false, message : "This is not a valid product ID"})
+        }
+
+        let findProduct = await product.findOne({_id : productID})
+
+        if(!findProduct){
+            return res.status(404).send({status : false, message : "No product with this id exists"})
+        }else{
+            return res.status(200).send({status : true, message : "success", data : findProduct})
+        }
+
+    }catch (error) {
+        return res.status(500).send({ status: false, message: error.message })      
+    }
+}
 
 
 
-
-module.exports = {createProduct}
+module.exports = {createProduct, getProductByID}
