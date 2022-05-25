@@ -310,6 +310,8 @@ const updateProfile = async (req,res)=>{
        let data = req.body
        let id = req.params.userId
 
+       let { fname, lname, email, password, phone, address } = data
+
        if(!id){
            return res.status(400).send({status : false, message : "User id is required to do this action"})
        }
@@ -331,14 +333,14 @@ const updateProfile = async (req,res)=>{
        let findUser = await user.findOne({_id : id})
        
        if(!findUser){
-           return res.status(404).send({status: false, message : "No user with this email exists"})
+           return res.status(404).send({status: false, message : "No user with this Id exists"})
        }
 
        if(req.userId != findUser._id){
            return res.status(403).send({status : false, message : "You can't update someone else's profile"})
        }
 
-       if(fname){
+       if(data.hasOwnProperty("fname")){
 
         if (!isValid(fname)) {
             return res.status(400).send({ status: false, message: " first name is required" })
@@ -410,7 +412,7 @@ const updateProfile = async (req,res)=>{
         if (same) return res.status(400).send({ status: false, msg: "password is same as the last one, try another password or login again" });
 
         const salt=await bcrypt.genSalt(10)
-        password = await bcrypt.hash(password, salt);
+        data.password = await bcrypt.hash(password, salt);
        }
 
        if(address){
@@ -497,4 +499,4 @@ const updateProfile = async (req,res)=>{
 }
 
 
-module.exports = {createUser, logIn, findProfile,updateProfile }
+module.exports = {createUser, logIn, findProfile, updateProfile}
