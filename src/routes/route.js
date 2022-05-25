@@ -1,5 +1,5 @@
 const express = require('express')
-const { createUser, logIn, findProfile } = require('../controller/userControllers')
+const { createUser, logIn, findProfile, updateProfile } = require('../controller/userControllers')
 const { authentication } = require('../middleware/auth')
 const router = express.Router()
 
@@ -8,6 +8,6 @@ const router = express.Router()
 router.post('/register', createUser)
 router.post('/login', logIn)
 router.get('/user/:userId/profile', authentication, findProfile)
-router.put('/user/:userId/profile')
+router.put('/user/:userId/profile', authentication, updateProfile)
 
 module.exports = router;

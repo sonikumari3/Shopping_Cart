@@ -309,6 +309,8 @@ const updateProfile = async (req,res)=>{
        let data = req.body
        let id = req.params.userId
 
+       let { fname, lname, email, password, phone, address } = data
+
        if(!id){
            return res.status(400).send({status : false, message : "User id is required to do this action"})
        }
@@ -496,4 +498,4 @@ const updateProfile = async (req,res)=>{
 }
 
 
-module.exports = {createUser, logIn, findProfile }
+module.exports = {createUser, logIn, findProfile, updateProfile}
