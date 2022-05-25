@@ -3,6 +3,7 @@ const product = require('../model/productModel')
 
 const createProduct = async (req,res)=>{
     try{
+        let data = req.body
 
     }
     catch (error) {
