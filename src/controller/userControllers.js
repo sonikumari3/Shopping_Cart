@@ -3,18 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const { uploadFile } = require("../middleware/aws");
-
-const isValidRequestBody = function (value) {
-    return Object.keys(value).length > 0;
-};
-
-//validaton check for the type of Value --
-const isValid = (value) => {
-    if (typeof value == "undefined" || value == null) return false;
-    if (typeof value == "string" && value.trim().length == 0) return false;
-    if (typeof value === "number" && value.toString().trim().length === 0) return false;
-    return true;
-};
+const { isValidRequestBody, isValid, isValidName, isValidEmail, isValidPhone, isValidCity, isValidPincode, isValidFile } = require("../validations/validations");
 
 const createUser = async (req, res) => {
     try {
@@ -34,7 +23,7 @@ const createUser = async (req, res) => {
         if (!isValid(fname)) {
             return res.status(400).send({ status: false, message: " first name is required" });
         }
-        if (!/^[A-Za-z\s]{1,}[\.]{0,1}[A-Za-z\s]{0,}$/.test(fname)) {
+        if (!isValidName(fname)) {
             return res.status(400).send({status: false, message: "Please enter valid user first name."});
         }
 
@@ -48,7 +37,7 @@ const createUser = async (req, res) => {
         }
 
         //this will validate the type of name including alphabets and its property withe the help of regex.
-        if (!/^[A-Za-z\s]{1,}[\.]{0,1}[A-Za-z\s]{0,}$/.test(lname)) {
+        if (!isValidName(lname)) {
             return res.status(400).send({ status: false, message: "Please enter valid user last name." });
         }
 
@@ -61,10 +50,7 @@ const createUser = async (req, res) => {
             return res.status(400).send({ status: false, message: "plzz enter email" });
         }
 
-        const emailPattern = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})/g;
-        //email regex validation for validate the type of email.
-
-        if (!email.match(emailPattern)) {
+        if (!isValidEmail(email)) {
             return res.status(400).send({ status: false, message: "This is not a valid email" });
         }
 
@@ -99,7 +85,7 @@ const createUser = async (req, res) => {
         }
 
         //this regex will to set the phone no. length to 10 numeric digits only.
-        if (!/^(\+91)?0?[6-9]\d{9}$/.test(phone)) {
+        if (!isValidPhone(phone)) {
             return res.status(400).send({status: false,message: "Please enter valid 10 digit mobile number."});
         }
 
@@ -118,6 +104,7 @@ const createUser = async (req, res) => {
         if (!address) {
             return res.status(400).send({ status: false, message: "address is required" });
         }
+        
         address = JSON.parse(address);
 
         if (typeof address != "object") {
@@ -142,7 +129,7 @@ const createUser = async (req, res) => {
             return res.status(400).send({ status: false, message: "shipping city is required" });
         }
 
-        if (!/^[a-zA-Z]+$/.test(shipping.city)) {
+        if (!isValidCity(shipping.city)) {
             return res.status(400).send({status: false, message: "city field have to fill by alpha characters"});
         }
 
@@ -151,7 +138,7 @@ const createUser = async (req, res) => {
         }
 
         //applicable only for numeric values and extend to be 6 characters only--
-        if (!/^\d{6}$/.test(shipping.pincode)) {
+        if (!isValidPincode(shipping.pincode)) {
             return res.status(400).send({ status: false, message: "plz enter valid pincode" });
         }
 
@@ -170,7 +157,7 @@ const createUser = async (req, res) => {
         if (!isValid(billing.city)) {
             return res.status(400).send({ status: false, message: "billing city is required" });
         }
-        if (!/^[a-zA-Z]+$/.test(billing.city)) {
+        if (!isValidCity(billing.city)) {
             return res.status(400).send({status: false,message: "city field have to fill by alpha characters"});
         }
 
@@ -179,7 +166,7 @@ const createUser = async (req, res) => {
         }
 
         //applicable only for numeric values and extend to be 6 characters only--
-        if (!/^\d{6}$/.test(billing.pincode)) {
+        if (!isValidPincode(billing.pincode)) {
             return res.status(400).send({ status: false, message: "plz enter valid  billing pincode" });
         }
         data.address = JSON.parse(data.address);
@@ -187,6 +174,11 @@ const createUser = async (req, res) => {
         let file = req.files;
         console.log(file);
         if (file && file.length > 0) {
+
+            if(!isValidFile(file)){
+                return res.status(400).send({status : false, message : "This is not a valid image file"})
+            }
+            
             let uploadedFileURL = await uploadFile(file[0]);
 
             data["profileImage"] = uploadedFileURL;
@@ -195,9 +187,7 @@ const createUser = async (req, res) => {
         }
 
         let saveData = await user.create(data);
-        return res
-            .status(201)
-            .send({ status: true, message: "success", data: saveData });
+        return res.status(201).send({ status: true, message: "success", data: saveData });
     } catch (error) {
         return res.status(500).send({ status: "error", message: error.message });
     }
@@ -213,8 +203,7 @@ const logIn = async (req, res) => {
         }
 
         if (email) {
-            let emailPattern = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})/g;
-            if (!email.match(emailPattern)) {
+            if (!isValidEmail(email)) {
                 return res.status(400).send({ status: false, message: "please provide a valid email" });
             }
         }
@@ -263,6 +252,11 @@ const logIn = async (req, res) => {
 const findProfile = async (req, res) => {
     try {
         let userId = req.params.userId;
+        let data = req.params
+
+        if(isValidRequestBody(data)){
+            return res.status(400).send({status : false, message : "No input has been provided"})
+        }
 
         if (!userId) {
             return res.status(400).send({
@@ -337,7 +331,7 @@ const updateProfile = async (req, res) => {
             if (!isValid(fname))
                 return res.status(400).send({ status: false, msg: "fname is missing" });
 
-            if (!/^[A-Za-z\s]{1,}[\.]{0,1}[A-Za-z\s]{0,}$/.test(fname)) {
+            if (!isValidName(fname)) {
                 return res.status(400).send({ status: false, message: "name should contain only alphabets." })
             }
         }
@@ -348,7 +342,7 @@ const updateProfile = async (req, res) => {
             if (!isValid(lname))
                 return res.status(400).send({ status: false, msg: "last name is missing" });
 
-            if (!/^[A-Za-z\s]{1,}[\.]{0,1}[A-Za-z\s]{0,}$/.test(lname)) {
+            if (!isValidName(lname)) {
                 return res.status(400).send({ status: false, message: "last name should contain only alphabets." })
             }
         }
@@ -357,27 +351,17 @@ const updateProfile = async (req, res) => {
             return res.status(400).send({status : false, messgae : "Email is invalid"})
         }else if (email) {
             if (!isValid(email)) {
-                return res
-                    .status(400)
-                    .send({ status: false, message: "plzz enter email" });
+                return res.status(400).send({ status: false, message: "plzz enter email" });
             }
-
-            const emailPattern = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})/g;
-            //email regex validation for validate the type of email.
-
-            if (!email.match(emailPattern)) {
-                return res
-                    .status(400)
-                    .send({ status: false, message: "This is not a valid email" });
+            if (!isValidEmail(email)) {
+                return res.status(400).send({ status: false, message: "This is not a valid email" });
             }
 
             email = email.toLowerCase().trim();
 
             const emailExt = await user.findOne({ email: email });
             if (emailExt) {
-                return res
-                    .status(409)
-                    .send({ status: false, message: "Email already exists" });
+                return res.status(409).send({ status: false, message: "Email already exists" });
             }
         }
         
@@ -391,7 +375,7 @@ const updateProfile = async (req, res) => {
             }
 
             //this regex will to set the phone no. length to 10 numeric digits only.
-            if (!/^(\+91)?0?[6-9]\d{9}$/.test(phone)) {
+            if (!isValidPhone(phone)) {
                 return res
                     .status(400)
                     .send({
@@ -462,7 +446,7 @@ const updateProfile = async (req, res) => {
                         .send({ status: false, message: "shipping city is required" });
                 }
 
-                if (!/^[a-zA-Z]+$/.test(shipping.city)) {
+                if (!isValidCity(shipping.city)) {
                     return res
                         .status(400)
                         .send({
@@ -478,7 +462,7 @@ const updateProfile = async (req, res) => {
                 }
 
                 //applicable only for numeric values and extend to be 6 characters only--
-                if (!/^\d{6}$/.test(shipping.pincode)) {
+                if (!isValidPincode(shipping.pincode)) {
                     return res
                         .status(400)
                         .send({ status: false, message: "plz enter valid pincode" });
@@ -503,7 +487,7 @@ const updateProfile = async (req, res) => {
                         .status(400)
                         .send({ status: false, message: "billing city is required" });
                 }
-                if (!/^[a-zA-Z]+$/.test(billing.city)) {
+                if (!isValidCity(billing.city)) {
                     return res
                         .status(400)
                         .send({
@@ -519,7 +503,7 @@ const updateProfile = async (req, res) => {
                 }
 
                 //applicable only for numeric values and extend to be 6 characters only--
-                if (!/^\d{6}$/.test(billing.pincode)) {
+                if (!isValidPincode(billing.pincode)) {
                     return res
                         .status(400)
                         .send({
@@ -534,6 +518,9 @@ const updateProfile = async (req, res) => {
         if (req.files && req.files.length > 0) {
             // uploading file and getting aws s3 link
             let files = req.files;
+            if(!isValidFile(files)){
+                return res.status(400).send({status : false, message : "This is not a valid image file"})
+            }
             //upload to s3 and get the uploaded link
             let uploadedFileURL = await uploadFile(files[0]); // used var to declare uploadedFileURl in global scope
             data.profileImage = uploadedFileURL;
