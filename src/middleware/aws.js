@@ -14,7 +14,7 @@ aws.config.update({
       var uploadParams = {
         ACL: "public-read",
         Bucket: "classroom-training-bucket",  
-        Key: "abc/" + file.originalname, 
+        Key: "DatabaseGroup7/" + file.originalname, 
         Body: file.buffer
       }
   
