@@ -95,9 +95,9 @@ const createProduct = async (req,res)=>{
                 return res.status(400).send({status : false, message : "Please provide valid installment"})
             }
 
-            if(typeof installment !== 'number'){
-                return res.status(400).send({status : false, message : "only number values are acceptable in Installments"})
-            }
+            // if(typeof installment !== 'number'){
+            //     return res.status(400).send({status : false, message : "only number values are acceptable in Installments"})
+            // }
         }
 
         let files = req.files
@@ -124,7 +124,7 @@ const createProduct = async (req,res)=>{
 
 const getProductbyQuery = async (req,res)=>{
     try{
-        
+
 
     }
     catch (error) {
@@ -136,13 +136,8 @@ const getProductbyQuery = async (req,res)=>{
 const getProductByID = async (req,res)=>{
     try{
         let productID = req.params.productId
-        let data =req.params
 
-        if(!isValidRequestBody(data)){
-            return res.status(400).send({status : false, message : "Please Provide some Input"})
-        }
-
-        if(!productID){
+        if(!productID || productID.trim().length === 0){
             return res.status(400).send({status : false, message : "product Id must be present to do this action"})
         }
         
@@ -155,7 +150,12 @@ const getProductByID = async (req,res)=>{
 
         if(!findProduct){
             return res.status(404).send({status : false, message : "No product with this id exists"})
-        }else{
+        }
+        
+        if(findProduct.isDeleted){
+            return res.status(404).send({status : false, message : "This product does not exists anymore"})
+        }
+        else{
             return res.status(200).send({status : true, message : "success", data : findProduct})
         }
 
