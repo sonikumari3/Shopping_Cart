@@ -255,12 +255,13 @@ const logIn = async(req,res)=>{
 const findProfile = async (req,res)=>{
     try{
        let userId = req.params
-
+       console.log(userId)
        if(!userId){
            return res.status(400).send({status : false, message : "User ID is required to do this action"})
        }
-
+       console.log(userId)
        if(!mongoose.isValidObjectId(userId)){
+        console.log(userId)
           return res.status(400).send({status : false, message : "User ID is required to do this action"})
        }
        
@@ -274,6 +275,7 @@ const findProfile = async (req,res)=>{
 
     }
     catch (error) {
+        console.log(error)
         return res.status(500).send({ status: false, message: error.message })      
     }
 }
