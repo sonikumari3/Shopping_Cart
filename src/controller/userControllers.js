@@ -39,7 +39,6 @@ const createUser =async (req,res)=>{
         if (!/^[A-Za-z\s]{1,}[\.]{0,1}[A-Za-z\s]{0,}$/.test(fname)) {
             return res.status(400).send({ status: false, message: "Please enter valid user first name." })
         }
-       
 
         // name validation
         if (!isValid(lname)) {

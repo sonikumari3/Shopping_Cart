@@ -16,6 +16,13 @@ const authentication = function(req,res,next){
            return res.status(400).send({status : false, message : "Token validation failed"})
        }
 
+       let exp = decodeToken.exp
+        let timeNow = Math.floor(Date.now() / 1000)
+        /// expiration case handle
+        if(exp < timeNow) return res.status(401).send({status:false,msg:'Token is expired now'})
+        // putting userId in the headers
+        req.userId = decodeToken.userId 
+
        next()
     }
     catch(error) {
