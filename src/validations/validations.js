@@ -12,7 +12,7 @@ const isValid = (value) => {
 
 const isValidEmail = (value)=>{
     let emailPattern = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})/g;
-    if(value.match(emailPattern)){
+    if(emailPattern.test(value)){
         return true
     }else{
         return false
@@ -21,7 +21,7 @@ const isValidEmail = (value)=>{
 
 const isValidPhone = (value)=>{
     let phonePattern = !/^(\+91)?0?[6-9]\d{9}$/g
-    if(value.match(phonePattern)){
+    if(phonePattern.test(value)){
         return true
     }else{
         return false
@@ -31,7 +31,7 @@ const isValidPhone = (value)=>{
 const isValidName = (value)=>{
     let namePattern = /^[A-Za-z\s]{1,}[\.]{0,1}[A-Za-z\s]{0,}$/g
 
-    if(value.match(namePattern)){
+    if(namePattern.test(value)){
         return true
     }else{return false}
 }
@@ -39,7 +39,7 @@ const isValidName = (value)=>{
 const isValidCity = (value)=>{
     let cityPattern = /^[a-zA-Z]+$/g
 
-    if(value.match(cityPattern)){
+    if(cityPattern.test(value)){
         return true
     }else{
         return false
@@ -49,17 +49,17 @@ const isValidCity = (value)=>{
 const isValidPincode = (value)=>{
     let pinCodePattern = /^\d{6}$/g
 
-    if(value.match(pinCodePattern)){
+    if(pinCodePattern.test(value)){
         return true
     }else{
         return false
     }
 }
 
-const isValidFile = (file)=>{
-    let filePattern = /\.(gif|jpe?g|tiff?|png|webp|bmp)$/g
+const isValidFile = (file) =>{
+    let filePattern = /\.(gif|jpe?g|tiff?|png|webp|bmp)$/g;
 
-    if(file.match(filePattern)){
+    if(filePattern.test(file)){
         return true
     }else{
         return false
