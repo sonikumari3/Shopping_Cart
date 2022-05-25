@@ -40,9 +40,9 @@ const createProduct = async (req,res)=>{
         if(!price){
             return res.status(400).send({status : false, message : "Price must be present"})
         }else{
-            if(typeof price !== 'number'){
-                return res.status(400).send({status : false, message : "Price must be in Numbers"})
-            }
+            // if(typeof price !== 'number'){
+            //     return res.status(400).send({status : false, message : "Price must be in Numbers"})
+            // }
             if(!isValid(price)){
                 return res.status(400).send({status : false, message : "This is not a valid Price"})
             }
@@ -95,9 +95,9 @@ const createProduct = async (req,res)=>{
                 return res.status(400).send({status : false, message : "Please provide valid installment"})
             }
 
-            if(typeof installment !== 'number'){
-                return res.status(400).send({status : false, message : "only number values are acceptable in Installments"})
-            }
+            // if(typeof installment !== 'number'){
+            //     return res.status(400).send({status : false, message : "only number values are acceptable in Installments"})
+            // }
         }
 
         let files = req.files
@@ -136,13 +136,8 @@ const getProductbyQuery = async (req,res)=>{
 const getProductByID = async (req,res)=>{
     try{
         let productID = req.params.productId
-        let data =req.params
 
-        if(!isValidRequestBody(data)){
-            return res.status(400).send({status : false, message : "Please Provide some Input"})
-        }
-
-        if(!productID){
+        if(!productID || productID.trim().length === 0){
             return res.status(400).send({status : false, message : "product Id must be present to do this action"})
         }
         
