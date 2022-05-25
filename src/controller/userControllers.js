@@ -252,12 +252,6 @@ const logIn = async (req, res) => {
 const findProfile = async (req, res) => {
     try {
         let userId = req.params.userId;
-        let data = req.params
-
-        if(isValidRequestBody(data)){
-            return res.status(400).send({status : false, message : "No input has been provided"})
-        }
-
         if (!userId) {
             return res.status(400).send({
                     status: false,
@@ -498,7 +492,7 @@ const updateProfile = async (req, res) => {
                 return res.status(400).send({status : false, message : "This is not a valid image file"})
             }
            */ 
-          
+
             //upload to s3 and get the uploaded link
             let uploadedFileURL = await uploadFile(files[0]); // used var to declare uploadedFileURl in global scope
             data.profileImage = uploadedFileURL;
