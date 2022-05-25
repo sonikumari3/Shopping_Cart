@@ -340,16 +340,21 @@ const updateProfile = async (req,res)=>{
            return res.status(403).send({status : false, message : "You can't update someone else's profile"})
        }
 
-       if(data.hasOwnProperty("fname")){
+    //    if(data.hasOwnProperty("fname")){
 
-        if (!isValid(fname)) {
-            return res.status(400).send({ status: false, message: " first name is required" })
+    //     if (!isValid(fname)) {
+    //         return res.status(400).send({ status: false, message: " first name is required" })
             
-        }
-        if (!/^[A-Za-z\s]{1,}[\.]{0,1}[A-Za-z\s]{0,}$/.test(fname)) {
-            return res.status(400).send({ status: false, message: "Please enter valid user first name." })
-        }
-       }
+    //     }
+    //     if (!/^[A-Za-z\s]{1,}[\.]{0,1}[A-Za-z\s]{0,}$/.test(fname)) {
+    //         return res.status(400).send({ status: false, message: "Please enter valid user first name." })
+    //     }
+    //    }
+
+    if (fname == "") {
+         return res.status(400).send({ status: false, message: "fname is invalid" }) }
+        else if (fname) {
+            if (!isValid(fname)) return res.status(400).send({ status: false, msg: "fname is missing" })}
 
        if(lname){
         if (!isValid(lname)) {
