@@ -175,10 +175,10 @@ const createUser = async (req, res) => {
         console.log(file);
         if (file && file.length > 0) {
 
-            // if(!isValidFile(file.originalname)){
+            // if(!isValidFile(file)){
             //     return res.status(400).send({status : false, message : "This is not a valid image file"})
             // }
-            
+
             let uploadedFileURL = await uploadFile(file[0]);
 
             data["profileImage"] = uploadedFileURL;
@@ -421,92 +421,66 @@ const updateProfile = async (req, res) => {
             address = JSON.parse(address);
 
             if (typeof address != "object") {
-                return res
-                    .status(400)
-                    .send({ status: false, message: "address should be an object" });
+                return res.status(400).send({ status: false, message: "address should be an object" });
             }
             let { shipping, billing } = address;
 
             if (shipping) {
                 if (typeof shipping != "object") {
-                    return res
-                        .status(400)
-                        .send({ status: false, message: "shipping should be an object" });
+                    return res.status(400).send({ status: false, message: "shipping should be an object" });
                 }
 
                 if (!isValid(shipping.street)) {
-                    return res
-                        .status(400)
-                        .send({ status: false, message: "shipping street is required" });
+                    return res.status(400).send({ status: false, message: "shipping street is required" });
                 }
 
                 if (!isValid(shipping.city)) {
-                    return res
-                        .status(400)
-                        .send({ status: false, message: "shipping city is required" });
+                    return res.status(400).send({ status: false, message: "shipping city is required" });
                 }
 
                 if (!isValidCity(shipping.city)) {
-                    return res
-                        .status(400)
-                        .send({
+                    return res.status(400).send({
                             status: false,
                             message: "city field have to fill by alpha characters",
                         });
                 }
 
                 if (!isValid(shipping.pincode)) {
-                    return res
-                        .status(400)
-                        .send({ status: false, message: "shipping street is required" });
+                    return res.status(400).send({ status: false, message: "shipping street is required" });
                 }
 
                 //applicable only for numeric values and extend to be 6 characters only--
                 if (!isValidPincode(shipping.pincode)) {
-                    return res
-                        .status(400)
-                        .send({ status: false, message: "plz enter valid pincode" });
+                    return res.status(400).send({ status: false, message: "plz enter valid pincode" });
                 }
             }
 
             if (billing) {
                 if (typeof billing != "object") {
-                    return res
-                        .status(400)
-                        .send({ status: false, message: "billing should be an object" });
+                    return res.status(400).send({ status: false, message: "billing should be an object" });
                 }
 
                 if (!isValid(billing.street)) {
-                    return res
-                        .status(400)
-                        .send({ status: false, message: "billing street is required" });
+                    return res.status(400).send({ status: false, message: "billing street is required" });
                 }
 
                 if (!isValid(billing.city)) {
-                    return res
-                        .status(400)
-                        .send({ status: false, message: "billing city is required" });
+                    return res.status(400).send({ status: false, message: "billing city is required" });
                 }
                 if (!isValidCity(billing.city)) {
-                    return res
-                        .status(400)
-                        .send({
+                    return res.status(400).send({
                             status: false,
                             message: "city field have to fill by alpha characters",
                         });
                 }
 
                 if (!isValid(billing.pincode)) {
-                    return res
-                        .status(400)
-                        .send({ status: false, message: "billing street is required" });
+                    return res.status(400).send({ status: false, message: "billing street is required" });
                 }
 
                 //applicable only for numeric values and extend to be 6 characters only--
                 if (!isValidPincode(billing.pincode)) {
-                    return res
-                        .status(400)
-                        .send({
+                    return res.status(400).send({
                             status: false,
                             message: "plz enter valid  billing pincode",
                         });
@@ -518,9 +492,13 @@ const updateProfile = async (req, res) => {
         if (req.files && req.files.length > 0) {
             // uploading file and getting aws s3 link
             let files = req.files;
+
+           /* 
             if(!isValidFile(files)){
                 return res.status(400).send({status : false, message : "This is not a valid image file"})
             }
+           */ 
+          
             //upload to s3 and get the uploaded link
             let uploadedFileURL = await uploadFile(files[0]); // used var to declare uploadedFileURl in global scope
             data.profileImage = uploadedFileURL;
