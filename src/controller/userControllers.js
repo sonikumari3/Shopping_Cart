@@ -254,14 +254,16 @@ const logIn = async(req,res)=>{
 
 const findProfile = async (req,res)=>{
     try{
-       let userId = req.params
+       let userId = req.params.userId
 
        if(!userId){
            return res.status(400).send({status : false, message : "User ID is required to do this action"})
        }
 
-       if(!mongoose.isValidObjectId(userId)){
-          return res.status(400).send({status : false, message : "User ID is required to do this action"})
+       let validUserId = mongoose.isValidObjectId(userId)
+
+       if(!validUserId){
+          return res.status(400).send({status : false, message : "please Provide a valid object Id"})
        }
        
        let findUser = await user.findOne({_id : userId})
