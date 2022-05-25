@@ -1,5 +1,5 @@
 const product = require('../model/productModel')
-const {isValidRequestBody, isValid} = require("../validations/validations")
+const {isValidRequestBody, isValid, isValidName, isValidPrice, isBoolean, isNumber} = require("../validations/validations")
 const {uploadFile} = require("../middleware/aws")
 const { default: mongoose } = require('mongoose')
 
@@ -18,6 +18,10 @@ const createProduct = async (req,res)=>{
         }else{
             if(!isValid(title)){
                 return res.status(400).send({status : false, message : "This is not a valid title"})
+            }
+
+            if(!isValidName(title)){
+                return res.status(400).send({status : false, message : "title can only be of alphabets"})
             }
 
             let dupTitle = await product.findOne({title : title})
@@ -40,11 +44,12 @@ const createProduct = async (req,res)=>{
         if(!price){
             return res.status(400).send({status : false, message : "Price must be present"})
         }else{
-            // if(typeof price !== 'number'){
-            //     return res.status(400).send({status : false, message : "Price must be in Numbers"})
-            // }
             if(!isValid(price)){
-                return res.status(400).send({status : false, message : "This is not a valid Price"})
+                return res.status(400).send({status : false, message : "price is missing"})
+            }
+
+            if(!isValidPrice(price)){
+                return res.status(400).send({status : false, message : "please enter a valid price"})
             }
         }
 
@@ -65,9 +70,14 @@ const createProduct = async (req,res)=>{
         }
 
         if(isFreeShipping){
-            if(typeof isFreeShipping !== 'boolean'){
-                return res.status(400).send({status : false, message : "is Free Shipping must be a BOOLEAN VALUE"})
+            if(!isValid(isFreeShipping)){
+                return res.status(400).send({status : false, message : "isFreeShipping is missing"})
             }
+            
+            if(!isBoolean(isFreeShipping)){
+                return res.status(400).send({status : false, message : "only Boolean value is accepted in shipping"})
+            }
+
         }
 
         if(style){
@@ -83,6 +93,7 @@ const createProduct = async (req,res)=>{
             if(!isValid(availableSize)){
                 return res.status(400).send({status : false, message : "please provide valid input"})
             }
+
             let sizeArray = ["S", "XS","M","X", "L","XXL", "XL"]
 
             if(!sizeArray.includes(availableSize)){
@@ -95,9 +106,9 @@ const createProduct = async (req,res)=>{
                 return res.status(400).send({status : false, message : "Please provide valid installment"})
             }
 
-            // if(typeof installment !== 'number'){
-            //     return res.status(400).send({status : false, message : "only number values are acceptable in Installments"})
-            // }
+            if(!isNumber(installment)){
+                return res.status(400).send({status : false, message : "Isntallment must be a Number"})
+            }
         }
 
         let files = req.files
@@ -221,7 +232,11 @@ const updateProduct  = async (req, res)=>{
 
         if(price){
             if(!isValid(price)){
-                return res.status(400).send({status : false, message : "please enter a price"})
+                return res.status(400).send({status : false, message : "price is missing"})
+            }
+
+            if(!isValidPrice(price)){
+                return res.status(400).send({status : false, message : "please enter a valid price"})
             }
         }
 
@@ -260,6 +275,10 @@ const updateProduct  = async (req, res)=>{
         if(installment){
             if(!isValid(installment)){
                 return res.status(400).send({status : false, message : "Please provide valid installment"})
+            }
+
+            if(!isNumber(installment)){
+                return res.status(400).send({status : false, message : "Isntallment must be a Number"})
             }
         }
 
