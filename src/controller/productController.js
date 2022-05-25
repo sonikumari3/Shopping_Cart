@@ -40,9 +40,9 @@ const createProduct = async (req,res)=>{
         if(!price){
             return res.status(400).send({status : false, message : "Price must be present"})
         }else{
-            if(typeof price !== 'number'){
-                return res.status(400).send({status : false, message : "Price must be in Numbers"})
-            }
+            // if(typeof price !== 'number'){
+            //     return res.status(400).send({status : false, message : "Price must be in Numbers"})
+            // }
             if(!isValid(price)){
                 return res.status(400).send({status : false, message : "This is not a valid Price"})
             }
