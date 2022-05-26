@@ -161,7 +161,7 @@ const getProductsByQuery = async (req,res)=>{
                 return res.status(400).send({stauts : false, message : "name must be in alphabets only"})
             }
 
-            filter['title'] = name.trim()
+            filter['title'] = { $regex: name, $options:"i" }
         }
 
         if(size){
@@ -175,7 +175,7 @@ const getProductsByQuery = async (req,res)=>{
             if(availableSizes.some(x => !arr.includes(x.trim())))
                return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
 
-            filter['availableSizes'] = size.trim()
+            filter['availableSizes'] = size.trim().toUpperCase()
         }
         
         if(priceGreaterThan){
