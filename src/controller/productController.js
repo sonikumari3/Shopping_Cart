@@ -142,7 +142,84 @@ const createProduct = async (req,res)=>{
 
 const getProductsByQuery = async (req,res)=>{
     try{
+        let data = req.query 
+        let filter = {
+            isDeleted : false
+        }
+        if(!isValidRequestBody(data)){
+            return res.status(400).send({status : false, message : "No input has been provided in query params"})
+        }
+
+        let {name, size, priceSort, priceGreaterThan, priceLessThan} = data
+
+        if(name){
+            if(!isValid(name)){
+                return res.status(400).send({status : false, message : "the name is missing in lenght"})
+            }
+            
+            if(!isValidName(name)){
+                return res.status(400).send({stauts : false, message : "name must be in alphabets only"})
+            }
+
+            filter['title'] = name.trim()
+        }
+
+        if(size){
+            if(!isValid(size)){
+                return res.status(400).send({status : false, message : "the size is missing in lenght"})
+            }
+
+            let availableSizes = size.toUpperCase().split(",")
+            let arr = ["S", "XS","M","X", "L","XXL", "XL"]
+
+            if(availableSizes.some(x => !arr.includes(x.trim())))
+               return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
+
+            filter['availableSizes'] = size.trim()
+        }
         
+        if(priceGreaterThan){
+            if(isValid(priceGreaterThan)){
+                return res.status(400).send({status : false, messsage : "Price greater than must have some length"})
+            }
+
+            if(isNaN(priceGreaterThan)){
+                return res.status(400).send({status : false, message : "price greater than must be number"})
+            }
+
+            filter['price'] = {
+                $gte : priceGreaterThan
+            }
+        }
+
+        if(priceLessThan){
+            if(isValid(priceLessThan)){
+                return res.status(400).send({status : false, messsage : "priceLessThan must have some length"})
+            }
+
+            if(isNaN(priceLessThan)){
+                return res.status(400).send({status : false, message : "priceLessThan must be number"})
+            }
+
+            filter['price'] = {
+                $lte : priceLessThan
+            }
+        }
+
+        if(priceLessThan && priceGreaterThan){
+            filter['price'] = { $lte : priceLessThan, $gte : priceGreaterThan}
+        }
+
+        
+        let filerProduct = await product.find(data).sort({price: priceSort})
+
+        if(filerProduct.length>0){
+            return res.status(200).send({status : false, message : "Success", data : filerProduct})
+        }
+        else{
+            return res.status(400).send({status : false, message : "No products found with this query"})
+        }
+
     }
     catch (error) {
         return res.status(500).send({ status: false, message: error.message })      
