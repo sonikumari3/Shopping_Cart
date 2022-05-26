@@ -1,13 +1,15 @@
 const product = require('../model/productModel')
-const {isValidRequestBody, isValid, isValidName, isValidPrice, isBoolean, isNumber} = require("../validations/validations")
+const {isValidRequestBody, isValid, isValidName, isValidPrice, isBoolean} = require("../validations/validations")
 const {uploadFile} = require("../middleware/aws")
 const { default: mongoose } = require('mongoose')
+const { ignore } = require('nodemon/lib/rules')
+const { Route53Resolver } = require('aws-sdk')
 
 
 const createProduct = async (req,res)=>{
     try{
         let data = req.body
-        let {title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSize, installment}= data
+        let {title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installment}= data
 
         if(! isValidRequestBody(data)){
             return res.status(400).send({status : false, message : "Please provide some input"})
@@ -91,19 +93,19 @@ const createProduct = async (req,res)=>{
             }
         }
 
-        if(!availableSize){
+        if(!availableSizes){
             return res.status(400).send({status : false, message : "Available sizes must be provided"})
         }
         else{
-            if(!isValid(availableSize)){
+            if(!isValid(availableSizes)){
                 return res.status(400).send({status : false, message : "please provide valid input"})
             }
 
-            let sizeArray = ["S", "XS","M","X", "L","XXL", "XL"]
+            availableSizes = availableSizes.toUpperCase().split(/[",\[\]]/)
+            let arr = ["S", "XS","M","X", "L","XXL", "XL"]
 
-            if(!sizeArray.includes(availableSize)){
-                return res.status(400).send({status : false, message : `Available sizes must be in ${sizeArray}` })
-            }
+            if(availableSizes.some(x => !arr.includes(x.trim())))
+               return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
         }
 
         if(installment){
@@ -111,7 +113,7 @@ const createProduct = async (req,res)=>{
                 return res.status(400).send({status : false, message : "Please provide valid installment"})
             }
 
-            if(!isNumber(installment)){
+            if(isNaN(installment)){
                 return res.status(400).send({status : false, message : "Isntallment must be a Number"})
             }
         }
@@ -138,86 +140,108 @@ const createProduct = async (req,res)=>{
 }
 
 
+const getProductsByQuery = async (req,res)=>{
+    try{
+        let data = req.query 
+        let filter = {
+            isDeleted : false
+        }
+        if(!isValidRequestBody(data)){
+            return res.status(400).send({status : false, message : "No input has been provided in query params"})
+        }
 
-const getAllProducts = async function(req, res) {
-    try {
-        const filterQuery = { isDeleted: false } //complete object details.
-        const data = req.query;
+        let {name, size, priceSort, priceGreaterThan, priceLessThan} = data
 
-        if (isValidRequestBody(queryParams)) {
-            const { size, name, priceGreaterThan, priceLessThan, priceSort } = data;
-
-            //validation starts.
-            if (isValid(size)) {
-                filterQuery['availableSizes'] = size
+        if(name){
+            if(!isValid(name)){
+                return res.status(400).send({status : false, message : "the name is missing in lenght"})
+            }
+            
+            if(!isValidName(name)){
+                return res.status(400).send({stauts : false, message : "name must be in alphabets only"})
             }
 
-            //using $regex to match the subString of the names of products & "i" for case insensitive.
-            if (isValid(name)) {
-                filterQuery['title'] = {}
-                filterQuery['title']['$regex'] = name
-                filterQuery['title']['$options'] = 'i'
+            filter['title'] = name.trim()
+        }
+
+        if(size){
+            if(!isValid(size)){
+                return res.status(400).send({status : false, message : "the size is missing in lenght"})
             }
 
-            //setting price for ranging the product's price to fetch them.
-            if (isValid(priceGreaterThan)) {
+            let availableSizes = size.toUpperCase().split(",")
+            let arr = ["S", "XS","M","X", "L","XXL", "XL"]
 
-                if (!(!isNaN(Number(priceGreaterThan)))) {
-                    return res.status(400).send({ status: false, message: `priceGreaterThan should be a valid number` })
-                }
-                if (priceGreaterThan <= 0) {
-                    return res.status(400).send({ status: false, message: `priceGreaterThan should be a valid number` })
-                }
-                if (!filterQuery.hasOwnProperty('price'))
-                    filterQuery['price'] = {}
-                filterQuery['price']['$gte'] = Number(priceGreaterThan)
-                    //console.log(typeof Number(priceGreaterThan))
+            if(availableSizes.some(x => !arr.includes(x.trim())))
+               return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
+
+            filter['availableSizes'] = size.trim()
+        }
+        
+        if(priceGreaterThan){
+            if(isValid(priceGreaterThan)){
+                return res.status(400).send({status : false, messsage : "Price greater than must have some length"})
             }
 
-            //setting price for ranging the product's price to fetch them.
-            if (isValid(priceLessThan)) {
-
-                if (!(!isNaN(Number(priceLessThan)))) {
-                    return res.status(400).send({ status: false, message: `priceLessThan should be a valid number` })
-                }
-                if (priceLessThan <= 0) {
-                    return res.status(400).send({ status: false, message: `priceLessThan should be a valid number` })
-                }
-                if (!filterQuery.hasOwnProperty('price'))
-                    filterQuery['price'] = {}
-                filterQuery['price']['$lte'] = Number(priceLessThan)
-                    //console.log(typeof Number(priceLessThan))
+            if(isNaN(priceGreaterThan)){
+                return res.status(400).send({status : false, message : "price greater than must be number"})
             }
 
-            //sorting the products acc. to prices => 1 for ascending & -1 for descending.
-            if (isValid(priceSort)) {
-
-                if (!((priceSort == 1) || (priceSort == -1))) {
-                    return res.status(400).send({ status: false, message: `priceSort should be 1 or -1 ` })
-                }
-
-                const products = await product.find(filterQuery).sort({ price: priceSort })
-                    // console.log(products)
-                if (Array.isArray(products) && products.length === 0) {
-                    return res.status(404).send({ productStatus: false, message: 'No Product found' })
-                }
-
-                return res.status(200).send({ status: true, message: 'Product list', data2: products })
+            filter['price'] = {
+                $gte : priceGreaterThan
             }
         }
 
-        const products = await product.find(filterQuery)
+        if(priceLessThan){
+            if(isValid(priceLessThan)){
+                return res.status(400).send({status : false, messsage : "priceLessThan must have some length"})
+            }
 
-        //verifying is it an array and having some data in that array.
-        if (Array.isArray(products) && products.length === 0) {
-            return res.status(404).send({ productStatus: false, message: 'No Product found' })
+            if(isNaN(priceLessThan)){
+                return res.status(400).send({status : false, message : "priceLessThan must be number"})
+            }
+
+            filter['price'] = {
+                $lte : priceLessThan
+            }
         }
 
-        return res.status(200).send({ status: true, message: 'Product list', data: products })
-    } catch (error) {
-        return res.status(500).send({ status: false, error: error.message });
+        if(priceLessThan && priceGreaterThan){
+            filter['price'] = { $lte : priceLessThan, $gte : priceGreaterThan}
+        }
+
+        if(priceSort){
+            if(priceSort != '1' ||priceSort !='-1'){
+                return res.status(400).send({status : false, message : "Price sort only takes 1 or -1 as a value" })
+            }
+
+            let filerProduct = await product.find(filter).sort({price: priceSort})
+
+            if(filerProduct.length>0){
+                return res.status(200).send({status : false, message : "Success", data : filerProduct})
+            }
+            else{
+                return res.status(404).send({status : false, message : "No products found with this query"})
+            }
+        } 
+        else{
+            let findProduct = await product.find(filter)
+
+            if(findProduct.length>0){
+                return res.status(200).send({status : false, message : "Success", data : findProduct})
+            }
+            else{
+                return res.status(404).send({status : false, message : "No products found with this query"})
+            }
+        }
+
+    }
+    catch (error) {
+        return res.status(500).send({ status: false, message: error.message })      
     }
 }
+
+
 
 
 const getProductByID = async (req,res)=>{
@@ -285,7 +309,7 @@ const updateProduct  = async (req, res)=>{
             return res.status(404).send({status :false, message : 'This product is deleted'})
         }
 
-        let {title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSize, installment} = data
+        let {title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installment} = data
 
         if(title){
         
@@ -336,17 +360,33 @@ const updateProduct  = async (req, res)=>{
             }
         }
 
-        if(availableSize){
+        if(isFreeShipping){
+            if(!isValid(isFreeShipping)){
+                return res.status(400).send({status : false, message : "isFreeShipping is missing"})
+            }
+            
+            if(!isBoolean(isFreeShipping)){
+                return res.status(400).send({status : false, message : "only Boolean value is accepted in shipping"})
+            }
+        }
+
+        if(style){
+            if(!isValid(style)){
+                return res.status(400).send({status : false, message : "please enter the style"})
+            }
+        }
+
+        if(availableSizes){
         
-            if(!isValid(availableSize)){
+            if(!isValid(availableSizes)){
                 return res.status(400).send({status : false, message : "please provide valid input"})
             }
 
-            let sizeArray = ["S", "XS","M","X", "L","XXL", "XL"]
+            availableSizes = availableSizes.toUpperCase().split(",")
+            let arr = ["S", "XS","M","X", "L","XXL", "XL"]
 
-            if(!sizeArray.includes(availableSize)){
-                return res.status(400).send({status : false, message : `Available sizes must be in ${sizeArray}` })
-            }
+            if(availableSizes.some(x => !arr.includes(x.trim())))
+               return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
         }
 
         if(installment){
@@ -354,7 +394,7 @@ const updateProduct  = async (req, res)=>{
                 return res.status(400).send({status : false, message : "Please provide valid installment"})
             }
 
-            if(!isNumber(installment)){
+            if(isNaN(installment)){
                 return res.status(400).send({status : false, message : "Isntallment must be a Number"})
             }
         }
@@ -413,4 +453,4 @@ const deleteProduct = async (req, res)=>{
 
 
 
-module.exports = {createProduct,getAllProducts, getProductByID, updateProduct, deleteProduct}
+module.exports = {createProduct, getProductByID, updateProduct, deleteProduct, getProductsByQuery}
