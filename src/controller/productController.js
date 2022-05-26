@@ -142,10 +142,10 @@ const createProduct = async (req,res)=>{
 const getAllProducts = async function(req, res) {
     try {
         const filterQuery = { isDeleted: false } //complete object details.
-        const queryParams = req.query;
+        const data = req.query;
 
         if (isValidRequestBody(queryParams)) {
-            const { size, name, priceGreaterThan, priceLessThan, priceSort } = queryParams;
+            const { size, name, priceGreaterThan, priceLessThan, priceSort } = data;
 
             //validation starts.
             if (isValid(size)) {
