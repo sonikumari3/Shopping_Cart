@@ -270,7 +270,7 @@ const findProfile = async (req, res) => {
         if (!findUser) {
             return res.status(404).send({ status: false, message: "no user with this id exists" });
         } else {
-            return res.status(200).send({ status: false, message: "success", data: findUser });
+            return res.status(200).send({ status: true, message: "success", data: findUser });
         }
     } catch (error) {
         return res.status(500).send({ status: false, message: error.message });

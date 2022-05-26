@@ -1,5 +1,5 @@
 const express = require('express')
-const { createProduct } = require('../controller/productController')
+const { createProduct, getProductByID } = require('../controller/productController')
 const { createUser, logIn, findProfile, updateProfile } = require('../controller/userControllers')
 const { authentication } = require('../middleware/auth')
 const router = express.Router()
@@ -15,5 +15,5 @@ router.put('/user/:userId/profile', authentication, updateProfile)
 //feature 2
 
 router.post('/products' , createProduct)
-
+router.get('/products/:productId',getProductByID)
 module.exports = router;
