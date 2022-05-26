@@ -2,12 +2,14 @@ const product = require('../model/productModel')
 const {isValidRequestBody, isValid, isValidName, isValidPrice, isBoolean, isNumber} = require("../validations/validations")
 const {uploadFile} = require("../middleware/aws")
 const { default: mongoose } = require('mongoose')
+const { ignore } = require('nodemon/lib/rules')
+const { Route53Resolver } = require('aws-sdk')
 
 
 const createProduct = async (req,res)=>{
     try{
         let data = req.body
-        let {title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSize, installment}= data
+        let {title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installment}= data
 
         if(! isValidRequestBody(data)){
             return res.status(400).send({status : false, message : "Please provide some input"})
@@ -91,19 +93,19 @@ const createProduct = async (req,res)=>{
             }
         }
 
-        if(!availableSize){
+        if(!availableSizes){
             return res.status(400).send({status : false, message : "Available sizes must be provided"})
         }
         else{
-            if(!isValid(availableSize)){
+            if(!isValid(availableSizes)){
                 return res.status(400).send({status : false, message : "please provide valid input"})
             }
 
-            let sizeArray = ["S", "XS","M","X", "L","XXL", "XL"]
+            availableSizes = availableSizes.toUpperCase().split(",")
+            let arr = ["S", "XS","M","X", "L","XXL", "XL"]
 
-            if(!sizeArray.includes(availableSize)){
-                return res.status(400).send({status : false, message : `Available sizes must be in ${sizeArray}` })
-            }
+            if(availableSizes.some(x => !arr.includes(x.trim())))
+               return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
         }
 
         if(installment){
@@ -205,7 +207,7 @@ const updateProduct  = async (req, res)=>{
             return res.status(404).send({status :false, message : 'This product is deleted'})
         }
 
-        let {title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSize, installment} = data
+        let {title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installment} = data
 
         if(title){
         
@@ -255,18 +257,34 @@ const updateProduct  = async (req, res)=>{
                 return res.status(400).send({status : false, message : "currency format must be ₹ "})
             }
         }
-
-        if(availableSize){
         
-            if(!isValid(availableSize)){
+        if(isFreeShipping){
+            if(!isValid(isFreeShipping)){
+                return res.status(400).send({status : false, message : "isFreeShipping is missing"})
+            }
+            
+            if(!isBoolean(isFreeShipping)){
+                return res.status(400).send({status : false, message : "only Boolean value is accepted in shipping"})
+            }
+        }
+
+        if(style){
+            if(!isValid(style)){
+                return res.status(400).send({status : false, message : "please enter the style"})
+            }
+        }
+
+        if(availableSizes){
+        
+            if(!isValid(availableSizes)){
                 return res.status(400).send({status : false, message : "please provide valid input"})
             }
 
-            let sizeArray = ["S", "XS","M","X", "L","XXL", "XL"]
+            availableSizes = availableSizes.toUpperCase().split(",")
+            let arr = ["S", "XS","M","X", "L","XXL", "XL"]
 
-            if(!sizeArray.includes(availableSize)){
-                return res.status(400).send({status : false, message : `Available sizes must be in ${sizeArray}` })
-            }
+            if(availableSizes.some(x => !arr.includes(x.trim())))
+               return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
         }
 
         if(installment){
