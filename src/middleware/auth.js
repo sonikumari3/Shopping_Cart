@@ -3,13 +3,15 @@ let secretKey = 'vjfjdaehvkxfpekfpekfojdsopfjsdaoifji'
 
 const authentication = function(req,res,next){
     try{
-       let token = req.headers('authorization', "Bearer")
+        let token = req.headers["authorization"] 
 
-       if(!token){
-           return res.status(400).send({status : false, message : "You are not logged in, please logIn"})
-       }
+        if (!token) {
+            return res.status(400).send({ Status: false, message: " Please enter the token" })
+        }
 
-       let decodeToken = jwt.verify(token, secretKey)
+        let userToken= token.split(" ")
+
+       let decodeToken = jwt.verify(userToken[1], secretKey)
 
        if(!decodeToken){
            return res.status(400).send({status : false, message : "Token validation failed"})

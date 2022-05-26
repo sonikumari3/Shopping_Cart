@@ -53,6 +53,9 @@ const createProduct = async (req,res)=>{
         }
 
         if(currencyId){
+            if(!isValid(currencyId)){
+                return res.status(400).send({status : false, message : "currency id is missing"})
+            }
             if(currencyId !== "INR"){
                 return res.status(400).send({status : false, message : "Currency ID Must be in INR"})
             }
@@ -60,7 +63,11 @@ const createProduct = async (req,res)=>{
             data.currencyId = "INR"
         }
 
-        if(currencyFormat){
+        if(currencyFormat){ 
+            if(!isValid(currencyFormat)){
+                return res.status(400).send({status : false, message : "currency format is missing"})
+            }
+
             if(currencyId !== "₹"){
                 return res.status(400).send({status : false, message : "currency format must be ₹ "})
             }
@@ -76,7 +83,6 @@ const createProduct = async (req,res)=>{
             if(!isBoolean(isFreeShipping)){
                 return res.status(400).send({status : false, message : "only Boolean value is accepted in shipping"})
             }
-
         }
 
         if(style){
