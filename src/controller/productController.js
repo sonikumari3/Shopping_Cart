@@ -215,7 +215,7 @@ const getProductsByQuery = async (req,res)=>{
                 return res.status(400).send({status : false, message : "Price sort only takes 1 or -1 as a value" })
             }
 
-            let filerProduct = await product.find(data).sort({price: priceSort})
+            let filerProduct = await product.find(filter).sort({price: priceSort})
 
             if(filerProduct.length>0){
                 return res.status(200).send({status : false, message : "Success", data : filerProduct})
@@ -225,10 +225,10 @@ const getProductsByQuery = async (req,res)=>{
             }
         } 
         else{
-            let findProduct = await product.find(data)
+            let findProduct = await product.find(filter)
 
             if(findProduct.length>0){
-                return res.status(200).send({status : false, message : "Success", data : filerProduct})
+                return res.status(200).send({status : false, message : "Success", data : findProduct})
             }
             else{
                 return res.status(404).send({status : false, message : "No products found with this query"})
