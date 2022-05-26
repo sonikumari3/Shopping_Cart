@@ -68,8 +68,8 @@ const createUser = async (req, res) => {
         if (!isValid(password)) {
             return res.status(400).send({ status: false, message: "plzz enter password" });
         }
-        if (password.length < 8 || password.length > 15) {
-            return res.status(400).send({ status: false, message: "plzz enter valid password" });
+        if (password.length <= 8 || password.length >= 15) {
+            return res.status(400).send({ status: false, message: "password should be 8-15 characters long" });
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -297,7 +297,7 @@ const updateProfile = async (req, res) => {
             return res.status(400).send({ status: false, message: "please Provide a valid user Id" });
         }
 
-        if (req.userId != req.params.userId) {
+        if (req.userId != req.params.userId) { //auhtorization
             return res.status(403).send({ status: false, message: "you are not authorized" });
         }
 

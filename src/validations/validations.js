@@ -20,7 +20,7 @@ const isValidEmail = (value)=>{
 }
 
 const isValidPhone = (value)=>{
-    let phonePattern = !/^(\+91)?0?[6-9]\d{9}$/g
+    let phonePattern = /^(\+91)?0?[6-9]\d{9}$/g
     if(phonePattern.test(value)){
         return true
     }else{
@@ -57,7 +57,7 @@ const isValidPincode = (value)=>{
 }
 
 const isValidFile = (file) =>{
-    let filePattern = /\.(gif|jpe?g|tiff?|png|webp|bmp)$/g;
+    let filePattern = /\.(gif|jpe?g|tiff?|png|webp|bmp)$/g
 
     if(filePattern.test(file)){
         return true
