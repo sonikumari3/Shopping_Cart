@@ -35,7 +35,6 @@ const createProduct = async (req,res)=>{
             return res.status(400).send({status : false, message : "description is a required field"})
         }else{
 
-           
             if(!isValid(description)){
                 return res.status(400).send({status : false, message : "This is not a valid description"})
             }
@@ -265,6 +264,7 @@ const updateProduct  = async (req, res)=>{
             if(!isValid(availableSize)){
                 return res.status(400).send({status : false, message : "please provide valid input"})
             }
+
             let sizeArray = ["S", "XS","M","X", "L","XXL", "XL"]
 
             if(!sizeArray.includes(availableSize)){
