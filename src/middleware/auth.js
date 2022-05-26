@@ -3,7 +3,7 @@ let secretKey = 'vjfjdaehvkxfpekfpekfojdsopfjsdaoifji'
 
 const authentication = function(req,res,next){
     try{
-       let token = req.headers['x-api-key']
+       let token = req.headers('authorization', "Bearer")
 
        if(!token){
            return res.status(400).send({status : false, message : "You are not logged in, please logIn"})
