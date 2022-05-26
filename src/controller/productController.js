@@ -210,14 +210,29 @@ const getProductsByQuery = async (req,res)=>{
             filter['price'] = { $lte : priceLessThan, $gte : priceGreaterThan}
         }
 
-        
-        let filerProduct = await product.find(data).sort({price: priceSort})
+        if(priceSort){
+            if(priceSort != '1' ||priceSort !='-1'){
+                return res.status(400).send({status : false, message : "Price sort only takes 1 or -1 as a value" })
+            }
 
-        if(filerProduct.length>0){
-            return res.status(200).send({status : false, message : "Success", data : filerProduct})
-        }
+            let filerProduct = await product.find(data).sort({price: priceSort})
+
+            if(filerProduct.length>0){
+                return res.status(200).send({status : false, message : "Success", data : filerProduct})
+            }
+            else{
+                return res.status(404).send({status : false, message : "No products found with this query"})
+            }
+        } 
         else{
-            return res.status(400).send({status : false, message : "No products found with this query"})
+            let findProduct = await product.find(data)
+
+            if(findProduct.length>0){
+                return res.status(200).send({status : false, message : "Success", data : filerProduct})
+            }
+            else{
+                return res.status(404).send({status : false, message : "No products found with this query"})
+            }
         }
 
     }
@@ -438,4 +453,4 @@ const deleteProduct = async (req, res)=>{
 
 
 
-module.exports = {createProduct, getProductByID, updateProduct, deleteProduct}
+module.exports = {createProduct, getProductByID, updateProduct, deleteProduct, getProductsByQuery}
