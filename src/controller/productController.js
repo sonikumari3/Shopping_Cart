@@ -1,5 +1,5 @@
 const product = require('../model/productModel')
-const {isValidRequestBody, isValid, isValidName, isValidPrice, isBoolean, isNumber} = require("../validations/validations")
+const {isValidRequestBody, isValid, isValidName, isValidPrice, isBoolean} = require("../validations/validations")
 const {uploadFile} = require("../middleware/aws")
 const { default: mongoose } = require('mongoose')
 const { ignore } = require('nodemon/lib/rules')
@@ -113,7 +113,7 @@ const createProduct = async (req,res)=>{
                 return res.status(400).send({status : false, message : "Please provide valid installment"})
             }
 
-            if(!isNumber(installment)){
+            if(isNaN(installment)){
                 return res.status(400).send({status : false, message : "Isntallment must be a Number"})
             }
         }
@@ -133,6 +133,16 @@ const createProduct = async (req,res)=>{
         if(createProduct){
             return res.status(201).send({status : true, message : "Product successfully created", data : createProduct})
         }
+    }
+    catch (error) {
+        return res.status(500).send({ status: false, message: error.message })      
+    }
+}
+
+
+const getProductsByQuery = async (req,res)=>{
+    try{
+        
     }
     catch (error) {
         return res.status(500).send({ status: false, message: error.message })      
@@ -292,7 +302,7 @@ const updateProduct  = async (req, res)=>{
                 return res.status(400).send({status : false, message : "Please provide valid installment"})
             }
 
-            if(!isNumber(installment)){
+            if(isNaN(installment)){
                 return res.status(400).send({status : false, message : "Isntallment must be a Number"})
             }
         }

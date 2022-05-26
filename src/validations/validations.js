@@ -86,6 +86,7 @@ const isBoolean = (value)=>{
     }
 }
 
+/*
 const isNumber = (value)=>{
     let numberPattern = /^\d+$/g
     if(numberPattern.test(value)){
@@ -94,6 +95,7 @@ const isNumber = (value)=>{
         return false
     }
 }
+*/
 
 module.exports = {
     isValid, 
@@ -106,5 +108,4 @@ module.exports = {
     isValidFile,
     isValidPrice,
     isBoolean,
-    isNumber
 }
