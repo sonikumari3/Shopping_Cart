@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const { uploadFile } = require("../middleware/aws");
-const { isValidRequestBody, isValid, isValidName, isValidEmail, isValidPhone, isValidCity, isValidPincode, isValidFile } = require("../validations/validations");
+const { isValidRequestBody, isValid, isValidName, isValidEmail, isValidPhone, isValidCity, isValidPincode, isValidFile, isValidPassword } = require("../validations/validations");
 
 const createUser = async (req, res) => {
     try {
@@ -68,7 +68,8 @@ const createUser = async (req, res) => {
         if (!isValid(password)) {
             return res.status(400).send({ status: false, message: "plzz enter password" });
         }
-        if (password.length <= 8 || password.length >= 15) {
+
+        if (!isValidPassword(password)) {
             return res.status(400).send({ status: false, message: "password should be 8-15 characters long" });
         }
 
@@ -208,12 +209,8 @@ const logIn = async (req, res) => {
             }
         }
 
-        if (!password || password.length == 0) {
-            return res.status(400).send({ status: false, message: "password must be provide" });
-        }
-
-        if (password.trim().length < 8 || password.trim().length > 15) {
-            return res.status(400).send({ status: false, message: "plzz enter valid password" });
+        if (!isValidPassword(password)) {
+            return res.status(400).send({ status: false, message: "password should be 8-15 characters long" });
         }
 
         let emailExt = await user.findOne({ email: email });
@@ -392,8 +389,9 @@ const updateProfile = async (req, res) => {
             if (!isValid(password)) {
                 return res.status(400).send({ status: false, message: "plzz enter password" });
             }
-            if (password.length < 8 || password.length > 15) {
-                return res.status(400).send({ status: false, message: "plzz enter valid password" });
+            
+            if (!isValidPassword(password)) {
+                return res.status(400).send({ status: false, message: "password should be 8-15 characters long" });
             }
 
             let findPassword = await user.findById(req.params.userId);

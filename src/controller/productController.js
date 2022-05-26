@@ -146,22 +146,19 @@ const getProductsByQuery = async (req,res)=>{
         let filter = {
             isDeleted : false
         }
-        if(!isValidRequestBody(data)){
-            return res.status(400).send({status : false, message : "No input has been provided in query params"})
-        }
 
         let {name, size, priceSort, priceGreaterThan, priceLessThan} = data
 
         if(name){
             if(!isValid(name)){
-                return res.status(400).send({status : false, message : "the name is missing in lenght"})
+                return res.status(400).send({status : false, message : "the name is missing in length"})
             }
             
             if(!isValidName(name)){
                 return res.status(400).send({stauts : false, message : "name must be in alphabets only"})
             }
 
-            filter['title'] = name.trim()
+            filter['title'] = { $regex: name, $options:"i" }
         }
 
         if(size){
@@ -175,7 +172,7 @@ const getProductsByQuery = async (req,res)=>{
             if(availableSizes.some(x => !arr.includes(x.trim())))
                return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
 
-            filter['availableSizes'] = size.trim()
+            filter['availableSizes'] = size.toUpperCase()
         }
         
         if(priceGreaterThan){
@@ -365,9 +362,9 @@ const updateProduct  = async (req, res)=>{
                 return res.status(400).send({status : false, message : "isFreeShipping is missing"})
             }
             
-            if(!isBoolean(isFreeShipping)){
-                return res.status(400).send({status : false, message : "only Boolean value is accepted in shipping"})
-            }
+            if (["true", "false"].includes(isFreeShipping) === false) {
+                return res.status(400).send({ status: false, message: "isFreeShipping should be boolean" });
+            }    
         }
 
         if(style){
@@ -382,11 +379,13 @@ const updateProduct  = async (req, res)=>{
                 return res.status(400).send({status : false, message : "please provide valid input"})
             }
 
-            availableSizes = availableSizes.toUpperCase().split(",")
+            let availableSizes2 = availableSizes.toUpperCase().split(/[",\[\]]/)
             let arr = ["S", "XS","M","X", "L","XXL", "XL"]
 
-            if(availableSizes.some(x => !arr.includes(x.trim())))
+            if(availableSizes2.some(x => !arr.includes(x.trim())))
                return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
+            
+            data.availableSizes = availableSizes.toUpperCase()
         }
 
         if(installment){

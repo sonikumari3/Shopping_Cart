@@ -59,7 +59,7 @@ const isValidPincode = (value)=>{
 const isValidFile = (file) =>{
     let filePattern = /\.(gif|jpe?g|tiff?|png|webp|bmp)$/g
 
-    if(filePattern.test(file)){
+    if(filePattern.test(file.originalname)){
         return true
     }else{
         return false
@@ -68,7 +68,6 @@ const isValidFile = (file) =>{
 
 const isValidPrice = (value)=>{
     let priceRegex=/^\d+(,\d{3})*(\.\d{1,2})?$/g
-
     if(priceRegex.test(value)){
         return true
     }else{
@@ -76,26 +75,16 @@ const isValidPrice = (value)=>{
     }
 }
 
-const isBoolean = (value)=>{
-    let booleanPattern = /^(True|False|TRUE|FALSE)$/g
 
-    if(booleanPattern.test(value)){
+const isValidPassword = (value)=>{
+    let passwordRegex = /^[a-zA-Z0-9!@#$%^&*]{8,15}$/g
+    if(passwordRegex.test(value)){
         return true
     }else{
         return false
     }
 }
 
-/*
-const isNumber = (value)=>{
-    let numberPattern = /^\d+$/g
-    if(numberPattern.test(value)){
-        return true
-    }else{
-        return false
-    }
-}
-*/
 
 module.exports = {
     isValid, 
@@ -107,5 +96,5 @@ module.exports = {
     isValidPincode,
     isValidFile,
     isValidPrice,
-    isBoolean,
+    isValidPassword
 }
