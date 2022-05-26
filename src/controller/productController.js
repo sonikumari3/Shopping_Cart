@@ -257,7 +257,7 @@ const updateProduct  = async (req, res)=>{
                 return res.status(400).send({status : false, message : "currency format must be ₹ "})
             }
         }
-        
+
         if(isFreeShipping){
             if(!isValid(isFreeShipping)){
                 return res.status(400).send({status : false, message : "isFreeShipping is missing"})
@@ -351,4 +351,4 @@ const deleteProduct = async (req, res)=>{
 
 
 
-module.exports = {createProduct,getAllProducts, getProductByID, updateProduct, deleteProduct}
+module.exports = {createProduct, getProductByID, updateProduct, deleteProduct}
