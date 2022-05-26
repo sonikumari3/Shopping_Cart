@@ -33,7 +33,8 @@ const productSchema = new mongoose.Schema({
 
     isFreeShipping : {
         type : Boolean,
-        default : false
+        default : false,
+        toLowerCase : true
     },
 
     productImage : {
