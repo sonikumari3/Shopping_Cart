@@ -51,7 +51,8 @@ const productSchema = new mongoose.Schema({
     },
 
     installement : {
-        type : Number
+        type : Number,
+        default : 0
     },
 
     deletedAt : {

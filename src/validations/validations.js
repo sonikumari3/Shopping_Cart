@@ -66,6 +66,35 @@ const isValidFile = (file) =>{
     }
 }
 
+const isValidPrice = (value)=>{
+    let priceRegex=/^\d+(,\d{3})*(\.\d{1,2})?$/g
+
+    if(priceRegex.test(value)){
+        return true
+    }else{
+        return false
+    }
+}
+
+const isBoolean = (value)=>{
+    let booleanPattern = /^(True|False|TRUE|FALSE)$/g
+
+    if(booleanPattern.test(value)){
+        return true
+    }else{
+        return false
+    }
+}
+
+const isNumber = (value)=>{
+    let numberPattern = /^\d+$/g
+    if(numberPattern.test(value)){
+        return true
+    }else{
+        return false
+    }
+}
+
 module.exports = {
     isValid, 
     isValidEmail, 
@@ -74,5 +103,8 @@ module.exports = {
     isValidRequestBody, 
     isValidCity, 
     isValidPincode,
-    isValidFile
+    isValidFile,
+    isValidPrice,
+    isBoolean,
+    isNumber
 }
