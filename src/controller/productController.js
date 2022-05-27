@@ -170,7 +170,7 @@ const getProductsByQuery = async (req,res)=>{
                 return res.status(400).send({status : false, message : "the size is missing in lenght"})
             }
     
-            filter['availableSizes'] = size.toUpperCase()
+            filter['availableSizes'] = size
         }
         
         if(priceGreaterThan){
