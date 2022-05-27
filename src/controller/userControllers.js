@@ -276,7 +276,7 @@ const findProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
     try {
-        let data = req.body;
+        let data = JSON.parse(JSON.stringify(req.body))
         let id = req.params.userId;
 
         let { fname, lname, email, password, phone, address } = data;
@@ -367,9 +367,7 @@ const updateProfile = async (req, res) => {
 
             //this regex will to set the phone no. length to 10 numeric digits only.
             if (!isValidPhone(phone)) {
-                return res
-                    .status(400)
-                    .send({
+                return res.status(400).send({
                         status: false,
                         message: "Please enter valid 10 digit mobile number.",
                     });
@@ -377,9 +375,7 @@ const updateProfile = async (req, res) => {
 
             const phoneExt = await user.findOne({ phone: phone });
             if (phoneExt) {
-                return res
-                    .status(409)
-                    .send({ status: false, message: "phone number already exists" });
+                return res.status(409).send({ status: false, message: "phone number already exists" });
             }
         }
 
