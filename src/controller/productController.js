@@ -105,7 +105,7 @@ const createProduct = async (req,res)=>{
             if(sizes.some(x => !arr.includes(x.trim())))
                return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
 
-            data['availableSizes'] = availableSizes.toUpperCase().split(',')
+            data['availableSizes'] = sizes
             
         }
 
@@ -380,13 +380,13 @@ const updateProduct  = async (req, res)=>{
                 return res.status(400).send({status : false, message : "please provide valid input"})
             }
 
-            let sizes = availableSizes.toUpperCase().split(/[",\[\]]/)
+            let sizes = availableSizes.toUpperCase().split(",")
             let arr = ["S", "XS","M","X", "L","XXL", "XL"]
 
             if(sizes.some(x => !arr.includes(x.trim())))
                return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
             
-            data.availableSizes = availableSizes.toUpperCase()
+            data.availableSizes = sizes
         }
 
         if(installment){
