@@ -167,7 +167,7 @@ const getProductsByQuery = async (req,res)=>{
                 return res.status(400).send({status : false, message : "the size is missing in lenght"})
             }
 
-            let sizes = availableSizes.toUpperCase().split(/[",\[\]]/)
+            let sizes = availableSizes.toUpperCase().split(",")
             let arr = ["S", "XS","M","X", "L","XXL", "XL"]
 
             if(sizes.some(x => !arr.includes(x.trim())))
@@ -177,7 +177,7 @@ const getProductsByQuery = async (req,res)=>{
         }
         
         if(priceGreaterThan){
-            if(isValid(priceGreaterThan)){
+            if(!isValid(priceGreaterThan)){
                 return res.status(400).send({status : false, messsage : "Price greater than must have some length"})
             }
 
@@ -191,7 +191,7 @@ const getProductsByQuery = async (req,res)=>{
         }
 
         if(priceLessThan){
-            if(isValid(priceLessThan)){
+            if(!isValid(priceLessThan)){
                 return res.status(400).send({status : false, messsage : "priceLessThan must have some length"})
             }
 
