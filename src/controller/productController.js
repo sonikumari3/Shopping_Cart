@@ -95,21 +95,9 @@ const createProduct = async (req,res)=>{
             return res.status(400).send({status : false, message : "Available sizes must be provided"})
         }
         else{
-        //     if(!isValid(availableSizes)){
-        //         return res.status(400).send({status : false, message : "please provide valid input"})
-        //     }
-
-        //     availableSizes = availableSizes.toUpperCase().split(/[",\[\]]/)
-        //     let arr = ["S", "XS","M","X", "L","XXL", "XL"]
-
-        //     if(availableSizes.some(x => !arr.includes(x.trim())))
-        //        return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
-        // }
-        if (availableSizes) {
             if(!isValid(availableSizes)){
                 return res.status(400).send({status : false, message : "please provide valid input"})
             }
-           // let sizes = availableSizes.split(",").map(x => x.trim())
 
             let sizes = availableSizes.toUpperCase().split(",")
             let arr = ["S", "XS","M","X", "L","XXL", "XL"]
@@ -117,12 +105,9 @@ const createProduct = async (req,res)=>{
             if(sizes.some(x => !arr.includes(x.trim())))
                return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
 
-            data['availableSizes'] = sizes
+            data['availableSizes'] = availableSizes.toUpperCase().split(',')
             
         }
-    }
-
-
 
         if(installment){
             if(!isValid(installment)){
@@ -181,14 +166,9 @@ const getProductsByQuery = async (req,res)=>{
             if(!isValid(size)){
                 return res.status(400).send({status : false, message : "the size is missing in lenght"})
             }
-
-            // let sizes = size.toUpperCase().split(",")
-            // let arr = ["S", "XS","M","X", "L","XXL", "XL"]
-
-            // if(sizes.some(x => !arr.includes(x.trim())))
-            //    return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
     
-            filter['availableSizes'] = size.toUpperCase()        }
+            filter['availableSizes'] = size.toUpperCase()
+        }
         
         if(priceGreaterThan){
             if(!isValid(priceGreaterThan)){
@@ -219,7 +199,7 @@ const getProductsByQuery = async (req,res)=>{
         }
 
         if(priceLessThan && priceGreaterThan){
-            filter['price'] = { '$lte' : priceLessThan, '$gte' : priceGreaterThan}
+            filter['price'] = { '$lt' : priceLessThan, '$gt' : priceGreaterThan}
         }
 
         if(priceSort){
@@ -323,18 +303,24 @@ const updateProduct  = async (req, res)=>{
 
         let {title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installment} = data
 
-        if(title){
-        
-            if(!isValid(title)){
-                return res.status(400).send({status : false, message : "This is not a valid title"})
-            }
+        if (title == "") {
+            return res.status(400).send({ status: false, message: "Title is invalid" });
+        } else if (title) {
+            if (!isValid(title))
+                return res.status(400).send({ status: false, msg: "Title is missing" });
+                if (!isValidName(title)) {
+                    return res.status(400).send({ status: false, message: "name should contain only alphabets." })
+                }
+                
+                let dupTitle = await product.findOne({title : title})
 
-            let dupTitle = await product.findOne({title : title})
+                if(dupTitle){
+                    return res.status(409).send({status : false, message : "This title is already being used"})
+                }
 
-            if(dupTitle){
-                return res.status(409).send({status : false, message : "This title is already being used"})
-            }
+            
         }
+  
 
         if(description){ 
             if(!isValid(description)){
@@ -400,11 +386,8 @@ const updateProduct  = async (req, res)=>{
             if(sizes.some(x => !arr.includes(x.trim())))
                return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
             
-            data.availableSizes =sizes
+            data.availableSizes = sizes
         }
-
-
-        
 
         if(installment){
             if(!isValid(installment)){
