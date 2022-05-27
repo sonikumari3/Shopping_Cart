@@ -89,6 +89,9 @@ const createProduct = async (req,res)=>{
             if(!isValid(style)){
                 return res.status(400).send({status : false, message : "please enter the style"})
             }
+            if(!isValidName(style)){
+                return res.status(400).send({status : false, message : 'Style only takes alphabets'})
+            }
         }
 
         if(!availableSizes){
@@ -105,7 +108,7 @@ const createProduct = async (req,res)=>{
             if(sizes.some(x => !arr.includes(x.trim())))
                return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
 
-            data['availableSizes'] = availableSizes.toUpperCase().split(',')
+            data['availableSizes'] = sizes
             
         }
 
@@ -303,16 +306,17 @@ const updateProduct  = async (req, res)=>{
 
         let {title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installment} = data
 
-        if (title == "") {
-            return res.status(400).send({ status: false, message: "Title is invalid" });
-        } else if (title) {
-            if (!isValid(title))
-                return res.status(400).send({ status: false, msg: "Title is missing" });
-                if (!isValidName(title)) {
-                    return res.status(400).send({ status: false, message: "name should contain only alphabets." })
-                }
-                
-                let dupTitle = await product.findOne({title : title})
+        if(title = ""){
+            return res.status(400).send({status: false,message :"Title can not be empty"})
+        }
+        else{
+            if(!isValid(title)){
+                return res.status(400).send({status : false, message : "title is missing in lenght"})
+            }
+
+            if(!isValidName(title)){
+                return res.status(400).send({status : false, message : "Title must contain only alphabets"})
+            }
 
                 if(dupTitle){
                     return res.status(409).send({status : false, message : "This title is already being used"})
@@ -320,15 +324,23 @@ const updateProduct  = async (req, res)=>{
 
             
         }
-  
+            
 
-        if(description){ 
+        if(description == ""){ 
+            return res.status.send({status : false, message :"description does not take empty value"})
+        }
+        else{
             if(!isValid(description)){
                 return res.status(400).send({status : false, message : "This is not a valid description"})
             }
         }
+            
+        
 
         if(price){
+            return res.status(400).send({status : false , message : "Price does not take empty string"})
+        }
+        else{
             if(!isValid(price)){
                 return res.status(400).send({status : false, message : "price is missing"})
             }
@@ -337,8 +349,12 @@ const updateProduct  = async (req, res)=>{
                 return res.status(400).send({status : false, message : "please enter a valid price"})
             }
         }
-
-        if(currencyId){
+            
+        
+        if(currencyId== ""){
+            return res.status(400).send({status : false, message : "currency Id does not take empty string"})
+        }
+        else{
             if(!isValid(currencyId)){
                 return res.status(400).send({status : false, message : "please enter a currency id"})
             }
@@ -346,9 +362,13 @@ const updateProduct  = async (req, res)=>{
             if(currencyId !== "INR"){
                 return res.status(400).send({status : false, message : "Only INR is accepted as Currency INR"})
             }
-        }
+        }           
+        
 
         if(currencyFormat){
+            return res.status(400).send({status : false, message : "Currency format does not take empty value"})
+        }
+        else{
             if(!isValid(currencyFormat)){
                 return res.status(400).send({status : false, message : "please enter a currency format"})
             }
@@ -358,7 +378,11 @@ const updateProduct  = async (req, res)=>{
             }
         }
 
-        if(isFreeShipping){
+        if(isFreeShipping==""){
+            return res.status(400).send({status: false, message : "isFreeShipping does not take empty value"})
+        }
+        else{
+
             if(!isValid(isFreeShipping)){
                 return res.status(400).send({status : false, message : "isFreeShipping is missing"})
             }
@@ -368,13 +392,22 @@ const updateProduct  = async (req, res)=>{
             }    
         }
 
-        if(style){
+        if(style== ""){
+            return res.status(400).send({status : false, message : "style does not take an empty string"})
+        }
+        else{
             if(!isValid(style)){
                 return res.status(400).send({status : false, message : "please enter the style"})
             }
+            if(!isValidName(style)){
+                return res.status(400).send({status : false, message : 'Style only takes alphabets'})
+            }
         }
 
-        if(availableSizes){
+        if(availableSizes== ""){
+            return res.status(400).send({status : false, message : "Available sizes does not take empty string"})
+        }
+        else{
         
             if(!isValid(availableSizes)){
                 return res.status(400).send({status : false, message : "please provide valid input"})
@@ -389,7 +422,10 @@ const updateProduct  = async (req, res)=>{
             data.availableSizes = sizes
         }
 
-        if(installment){
+        if(installment==""){
+            return res.status(400).send({status : false, message : "Installments does not take an empty string"})
+        }
+        else{
             if(!isValid(installment)){
                 return res.status(400).send({status : false, message : "Please provide valid installment"})
             }
