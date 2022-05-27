@@ -56,15 +56,6 @@ const isValidPincode = (value)=>{
     }
 }
 
-const isValidFile = (file) =>{
-    let filePattern = /\.(gif|jpe?g|tiff?|png|webp|bmp)$/g
-
-    if(filePattern.test(file.originalname)){
-        return true
-    }else{
-        return false
-    }
-}
 
 const isValidPrice = (value)=>{
     let priceRegex=/^\d+(,\d{3})*(\.\d{1,2})?$/g
@@ -94,7 +85,6 @@ module.exports = {
     isValidRequestBody, 
     isValidCity, 
     isValidPincode,
-    isValidFile,
     isValidPrice,
     isValidPassword
 }
