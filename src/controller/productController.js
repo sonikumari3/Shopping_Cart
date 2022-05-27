@@ -166,12 +166,12 @@ const getProductsByQuery = async (req,res)=>{
                 return res.status(400).send({status : false, message : "the size is missing in lenght"})
             }
 
-            let availableSizes = size.toUpperCase().split(",")
+            let sizes = availableSizes.toUpperCase().split(/[",\[\]]/)
             let arr = ["S", "XS","M","X", "L","XXL", "XL"]
 
-            if(availableSizes.some(x => !arr.includes(x.trim())))
+            if(sizes.some(x => !arr.includes(x.trim())))
                return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
-
+    
             filter['availableSizes'] = size.toUpperCase()
         }
         
@@ -204,11 +204,11 @@ const getProductsByQuery = async (req,res)=>{
         }
 
         if(priceLessThan && priceGreaterThan){
-            filter['price'] = { $lte : priceLessThan, $gte : priceGreaterThan}
+            filter['price'] = { '$lte' : priceLessThan, '$gte' : priceGreaterThan}
         }
 
         if(priceSort){
-            if(priceSort != '1' ||priceSort !='-1'){
+            if(priceSort != 1 || priceSort != -1){
                 return res.status(400).send({status : false, message : "Price sort only takes 1 or -1 as a value" })
             }
 
@@ -379,10 +379,10 @@ const updateProduct  = async (req, res)=>{
                 return res.status(400).send({status : false, message : "please provide valid input"})
             }
 
-            let availableSizes2 = availableSizes.toUpperCase().split(/[",\[\]]/)
+            let sizes = availableSizes.toUpperCase().split(/[",\[\]]/)
             let arr = ["S", "XS","M","X", "L","XXL", "XL"]
 
-            if(availableSizes2.some(x => !arr.includes(x.trim())))
+            if(sizes.some(x => !arr.includes(x.trim())))
                return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
             
             data.availableSizes = availableSizes.toUpperCase()
