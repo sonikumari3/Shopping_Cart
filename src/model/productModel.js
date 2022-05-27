@@ -50,7 +50,7 @@ const productSchema = new mongoose.Schema({
         type : [String]
     },
 
-    installement : {
+    installements : {
         type : Number,
         default : 0
     },
