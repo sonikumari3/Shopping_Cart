@@ -2,8 +2,6 @@ const product = require('../model/productModel')
 const {isValidRequestBody, isValid, isValidName, isValidPrice, isBoolean} = require("../validations/validations")
 const {uploadFile} = require("../middleware/aws")
 const { default: mongoose } = require('mongoose')
-const { ignore } = require('nodemon/lib/rules')
-const { Route53Resolver } = require('aws-sdk')
 
 
 const createProduct = async (req,res)=>{
@@ -118,12 +116,11 @@ const createProduct = async (req,res)=>{
                     return res.status(400).send({ status: false, message: "AvailableSizes should be among ['S','XS','M','X','L','XXL','XL']" })
                 }
             }
+            data['availableSizes'] =availableSizes.toUpperCase().split(",")
 
-            //using array.isArray function to check the value is array or not.
-            if (Array.isArray(sizes)) {
-                newProductData['availableSizes'] = [...new Set(sizes)]
-            }
-    
+
+            // if(sizes.some(x => !arr.includes(x.trim())))
+            //    return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
         }
     }
 
@@ -187,17 +184,18 @@ const getProductsByQuery = async (req,res)=>{
                 return res.status(400).send({status : false, message : "the size is missing in lenght"})
             }
 
-            let sizes = availableSizes.toUpperCase().split(/[",\[\]]/)
+            let sizes = size.toUpperCase().split(/[",\[\]]/)
             let arr = ["S", "XS","M","X", "L","XXL", "XL"]
 
             if(sizes.some(x => !arr.includes(x.trim())))
                return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
     
-            filter['availableSizes'] = size.toUpperCase()
+            filter['availableSizes'] = size.toUpperCase().split(",")
+
         }
         
         if(priceGreaterThan){
-            if(isValid(priceGreaterThan)){
+            if(!isValid(priceGreaterThan)){
                 return res.status(400).send({status : false, messsage : "Price greater than must have some length"})
             }
 
@@ -206,12 +204,12 @@ const getProductsByQuery = async (req,res)=>{
             }
 
             filter['price'] = {
-                $gte : priceGreaterThan
+                '$gte' : priceGreaterThan
             }
         }
 
         if(priceLessThan){
-            if(isValid(priceLessThan)){
+            if(!isValid(priceLessThan)){
                 return res.status(400).send({status : false, messsage : "priceLessThan must have some length"})
             }
 
@@ -220,7 +218,7 @@ const getProductsByQuery = async (req,res)=>{
             }
 
             filter['price'] = {
-                $lte : priceLessThan
+                '$lte' : priceLessThan
             }
         }
 
@@ -233,10 +231,10 @@ const getProductsByQuery = async (req,res)=>{
                 return res.status(400).send({status : false, message : "Price sort only takes 1 or -1 as a value" })
             }
 
-            let filerProduct = await product.find(filter).sort({price: priceSort})
+            let filterProduct = await product.find(filter).sort({price: priceSort})
 
-            if(filerProduct.length>0){
-                return res.status(200).send({status : false, message : "Success", data : filerProduct})
+            if(filterProduct.length>0){
+                return res.status(200).send({status : false, message : "Success", data : filterProduct})
             }
             else{
                 return res.status(404).send({status : false, message : "No products found with this query"})
