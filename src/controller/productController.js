@@ -105,7 +105,7 @@ const createProduct = async (req,res)=>{
             if(sizes.some(x => !arr.includes(x.trim())))
                return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
 
-            data['availableSizes'] = availableSizes.toUpperCase().split(',')
+            data['availableSizes'] = sizes
             
         }
 
