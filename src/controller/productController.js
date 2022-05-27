@@ -109,18 +109,16 @@ const createProduct = async (req,res)=>{
             if(!isValid(availableSizes)){
                 return res.status(400).send({status : false, message : "please provide valid input"})
             }
-            let sizes = availableSizes.split(",").map(x => x.trim())
+           // let sizes = availableSizes.split(",").map(x => x.trim())
 
-            for (let i = 0; i < sizes.length; i++) {
-                if (!(["S", "XS", "M", "X", "L", "XXL", "XL"].includes(sizes[i]))) {
-                    return res.status(400).send({ status: false, message: "AvailableSizes should be among ['S','XS','M','X','L','XXL','XL']" })
-                }
-            }
-            data['availableSizes'] =availableSizes.toUpperCase().split(",")
+            let sizes = availableSizes.toUpperCase().split(",")
+            let arr = ["S", "XS","M","X", "L","XXL", "XL"]
 
+            if(sizes.some(x => !arr.includes(x.trim())))
+               return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
 
-            // if(sizes.some(x => !arr.includes(x.trim())))
-            //    return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
+            data['availableSizes'] = sizes
+            
         }
     }
 
@@ -184,15 +182,13 @@ const getProductsByQuery = async (req,res)=>{
                 return res.status(400).send({status : false, message : "the size is missing in lenght"})
             }
 
-            let sizes = size.toUpperCase().split(/[",\[\]]/)
-            let arr = ["S", "XS","M","X", "L","XXL", "XL"]
+            // let sizes = size.toUpperCase().split(",")
+            // let arr = ["S", "XS","M","X", "L","XXL", "XL"]
 
-            if(sizes.some(x => !arr.includes(x.trim())))
-               return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
+            // if(sizes.some(x => !arr.includes(x.trim())))
+            //    return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
     
-            filter['availableSizes'] = size.toUpperCase().split(",")
-
-        }
+            filter['availableSizes'] = size.toUpperCase()        }
         
         if(priceGreaterThan){
             if(!isValid(priceGreaterThan)){
@@ -204,7 +200,7 @@ const getProductsByQuery = async (req,res)=>{
             }
 
             filter['price'] = {
-                '$gte' : priceGreaterThan
+                '$gt' : priceGreaterThan
             }
         }
 
@@ -218,7 +214,7 @@ const getProductsByQuery = async (req,res)=>{
             }
 
             filter['price'] = {
-                '$lte' : priceLessThan
+                '$lt' : priceLessThan
             }
         }
 
@@ -392,40 +388,23 @@ const updateProduct  = async (req, res)=>{
             }
         }
 
-        // if(availableSizes){
+        if(availableSizes){
         
-            // if(!isValid(availableSizes)){
-            //     return res.status(400).send({status : false, message : "please provide valid input"})
-            // }
-
-        //     let sizes = availableSizes.toUpperCase().split(/[",\[\]]/)
-        //     let arr = ["S", "XS","M","X", "L","XXL", "XL"]
-
-        //     if(sizes.some(x => !arr.includes(x.trim())))
-        //        return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
-            
-        //     data.availableSizes = availableSizes.toUpperCase()
-        // }
-
-
-        if (availableSizes) {
             if(!isValid(availableSizes)){
                 return res.status(400).send({status : false, message : "please provide valid input"})
             }
-            let sizes = availableSizes.split(",").map(x => x.trim())
 
-            for (let i = 0; i < sizesArray.length; i++) {
-                if (!(["S", "XS", "M", "X", "L", "XXL", "XL"].includes(sizesArray[i]))) {
-                    return res.status(400).send({ status: false, message: "AvailableSizes should be among ['S','XS','M','X','L','XXL','XL']" })
-                }
-            }
+            let sizes = availableSizes.toUpperCase().split(",")
+            let arr = ["S", "XS","M","X", "L","XXL", "XL"]
 
-            //using array.isArray function to check the value is array or not.
-            if (Array.isArray(sizesArray)) {
-                newProductData['availableSizes'] = [...new Set(sizesArray)]
-            }
-    
+            if(sizes.some(x => !arr.includes(x.trim())))
+               return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
+            
+            data.availableSizes =sizes
         }
+
+
+        
 
         if(installment){
             if(!isValid(installment)){
