@@ -105,7 +105,7 @@ const createProduct = async (req,res)=>{
             if(sizes.some(x => !arr.includes(x.trim())))
                return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
 
-            data['availableSizes'] = sizes
+            data['availableSizes'] = availableSizes.toUpperCase().split(',')
             
         }
 
@@ -166,14 +166,8 @@ const getProductsByQuery = async (req,res)=>{
             if(!isValid(size)){
                 return res.status(400).send({status : false, message : "the size is missing in lenght"})
             }
-
-            let sizes = availableSizes.toUpperCase().split(",")
-            let arr = ["S", "XS","M","X", "L","XXL", "XL"]
-
-            if(sizes.some(x => !arr.includes(x.trim())))
-               return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
     
-            filter['availableSizes'] = size.toUpperCase().split(",")
+            filter['availableSizes'] = size.toUpperCase()
         }
         
         if(priceGreaterThan){
