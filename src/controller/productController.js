@@ -82,8 +82,8 @@ const createProduct = async (req,res)=>{
                 return res.status(400).send({status : false, message : "isFreeShipping is missing"})
             }
             
-            if(!isBoolean(isFreeShipping)){
-                return res.status(400).send({status : false, message : "only Boolean value is accepted in shipping"})
+            if (["true", "false"].includes(isFreeShipping) === false) {
+                return res.status(400).send({ status: false, message: "isFreeShipping should be boolean" });
             }
         }
 
