@@ -180,7 +180,7 @@ const getProductsByQuery = async (req,res)=>{
             }
 
             filter['price'] = {
-                '$gte' : priceGreaterThan
+                '$gt' : priceGreaterThan
             }
         }
 
@@ -194,7 +194,7 @@ const getProductsByQuery = async (req,res)=>{
             }
 
             filter['price'] = {
-                '$lte' : priceLessThan
+                '$lt' : priceLessThan
             }
         }
 
