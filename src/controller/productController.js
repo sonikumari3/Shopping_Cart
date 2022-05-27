@@ -2,8 +2,6 @@ const product = require('../model/productModel')
 const {isValidRequestBody, isValid, isValidName, isValidPrice, isBoolean} = require("../validations/validations")
 const {uploadFile} = require("../middleware/aws")
 const { default: mongoose } = require('mongoose')
-const { ignore } = require('nodemon/lib/rules')
-const { Route53Resolver } = require('aws-sdk')
 
 
 const createProduct = async (req,res)=>{
@@ -106,6 +104,7 @@ const createProduct = async (req,res)=>{
 
             if(availableSizes.some(x => !arr.includes(x.trim())))
                return res.status(400).send({status : false, message : `available sizes must be in ${arr}`})
+            
         }
 
         if(installment){
@@ -185,7 +184,7 @@ const getProductsByQuery = async (req,res)=>{
             }
 
             filter['price'] = {
-                $gte : priceGreaterThan
+                '$gte' : priceGreaterThan
             }
         }
 
@@ -199,7 +198,7 @@ const getProductsByQuery = async (req,res)=>{
             }
 
             filter['price'] = {
-                $lte : priceLessThan
+                '$lte' : priceLessThan
             }
         }
 
@@ -212,10 +211,10 @@ const getProductsByQuery = async (req,res)=>{
                 return res.status(400).send({status : false, message : "Price sort only takes 1 or -1 as a value" })
             }
 
-            let filerProduct = await product.find(filter).sort({price: priceSort})
+            let filterProduct = await product.find(filter).sort({price: priceSort})
 
-            if(filerProduct.length>0){
-                return res.status(200).send({status : false, message : "Success", data : filerProduct})
+            if(filterProduct.length>0){
+                return res.status(200).send({status : false, message : "Success", data : filterProduct})
             }
             else{
                 return res.status(404).send({status : false, message : "No products found with this query"})
