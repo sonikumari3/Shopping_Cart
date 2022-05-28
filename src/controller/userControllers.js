@@ -308,14 +308,6 @@ const updateProfile = async (req, res) => {
             return res.status(404).send({ status: false, message: "No user with this Id exists" });
         }
 
-        if (req.userId != findUser._id) {
-            return res.status(403).send({
-                status: false,
-                message: "You can't update someone else's profile",
-            });
-        }
-
-
         if (fname == "") {
             return res.status(400).send({ status: false, message: "fname is invalid" });
         } else if (fname) {

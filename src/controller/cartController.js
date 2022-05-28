@@ -47,6 +47,7 @@ const createCart = async (req, res) => {
         console.log(findUser)
 
         // Valid user or not 
+        
         if (findUser._id.toString() !== tokenId) {
             console.log(findUser._id)
             console.log(tokenId)
@@ -63,7 +64,7 @@ const createCart = async (req, res) => {
 
         let findCart = await cart.findOne({ _id: userId })
         if (!findCart) {
-            //    Destructuring 
+           
             var data = {
                 userId: userId,
                 items: [{
@@ -71,7 +72,7 @@ const createCart = async (req, res) => {
                     quantity: quantity,
                 }],
                 totalPrice: findProduct.price * quantity,
-                totalItems: 1
+                totalItems: items.length 
             }
 
             const createCart = await cart.create({ data })
