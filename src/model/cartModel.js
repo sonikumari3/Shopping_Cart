@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const ObjectId = mongoose.Schema.Types.ObjectId
+const ObjectId =mongoose.Schema.Types.ObjectId
 
 const cartSchema = new mongoose.Schema({
 
@@ -17,7 +17,8 @@ const cartSchema = new mongoose.Schema({
         },
         quantity: {
             type: Number,
-            require: true
+            require: true,
+            minLen: 1
         }
     }],
 
@@ -34,3 +35,5 @@ const cartSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 module.exports = mongoose.model('cart', cartSchema)
+
+
