@@ -203,7 +203,7 @@ const getProductsByQuery = async (req,res)=>{
         }
 
         if(priceLessThan && priceGreaterThan){
-            filter['price'] = { '$lte' : priceLessThan, '$gte' : priceGreaterThan}
+            filter['price'] = { '$lt' : priceLessThan, '$gt' : priceGreaterThan}
         }
 
         if(priceSort){
@@ -320,11 +320,11 @@ const updateProduct  = async (req, res)=>{
                 return res.status(400).send({status : false, message : "Title must contain only alphabets"})
             }
 
-            let dupTitle = await product.findOne({title : title})
+                if(dupTitle){
+                    return res.status(409).send({status : false, message : "This title is already being used"})
+                }
 
-            if(dupTitle){
-                return res.status(409).send({status : false, message : "This title is already being used"})
-            }
+            
         }
     
             

@@ -1,5 +1,10 @@
+const mongoose =require('mongoose')
+
 const isValidRequestBody = function (value) {
     return Object.keys(value).length > 0;
+};
+const isValidObjectId = function(objectId) {
+    return mongoose.Types.ObjectId.isValid(objectId)
 };
 
 //validaton check for the type of Value --
@@ -86,5 +91,6 @@ module.exports = {
     isValidCity, 
     isValidPincode,
     isValidPrice,
-    isValidPassword
+    isValidPassword,
+    isValidObjectId
 }
