@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const { uploadFile } = require("../middleware/aws");
-const { isValidRequestBody, isValid, isValidName, isValidEmail, isValidPhone, isValidCity, isValidPincode, isValidFile, isValidPassword } = require("../validations/validations");
+const { isValidRequestBody, isValid, isValidName, isValidEmail, isValidPhone, isValidCity, isValidPincode, isValidPassword } = require("../validations/validations");
 
 const createUser = async (req, res) => {
     try {
