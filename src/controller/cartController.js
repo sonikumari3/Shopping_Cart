@@ -9,7 +9,7 @@ const createCart = async (req, res) => {
         let userId = req.params.userId
         let tokenId = req.userId
         let body = req.body
-        const { quantity, productId } = body
+        const { quantity, productId } = body.items
         console.log(productId)
 
         //validation 
@@ -47,7 +47,7 @@ const createCart = async (req, res) => {
         console.log(findUser)
 
         // Valid user or not 
-        
+
         if (findUser._id.toString() !== tokenId) {
             console.log(findUser._id)
             console.log(tokenId)
