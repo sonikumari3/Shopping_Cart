@@ -7,6 +7,7 @@ const { default: mongoose } = require('mongoose')
 const createProduct = async (req,res)=>{
     try{
         let data = JSON.parse(JSON.stringify(req.body))
+        console.log(data)
         let {title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments}= data
 
         if(! isValidRequestBody(data)){

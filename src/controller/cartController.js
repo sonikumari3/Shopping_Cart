@@ -49,16 +49,16 @@ const createCart = async (req, res) => {
         if (!findUser) {
             return res.status(404).send({ status: false, message: "User Id not present" })
         }
-        console.log(findUser)
+       
 
        
         const findProduct = await product.findOne({ _id: productId, isDeleted: false })
         if (!findProduct) {
             return res.status(404).send({ status: false, message: "Product is deleted" })
         }
-const findCartOfUser = await cart.findOne({ userId: userId }) 
+const findCart = await cart.findOne({ userId: userId }) 
 
-if (!findCartOfUser) {
+if (!findCart) {
 
     //destructuring for the response body.
     var data= {
