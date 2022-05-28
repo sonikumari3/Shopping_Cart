@@ -23,7 +23,7 @@ router.delete('/products/:productId', deleteProduct)
 
 //feature 3
 
-router.post('/users/:userId/cart',createCart)
+router.post('/users/:userId/cart',authentication,createCart)
 router.get('/users/:userId/cart',getCart)
 
 

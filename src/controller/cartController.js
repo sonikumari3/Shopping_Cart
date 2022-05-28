@@ -90,17 +90,17 @@ const createCart = async (req, res) => {
         let createCart = await cart.create(cartData)
         return res.status(201).send({ status: true, message: "success", data: createCart })
        }
-       else{
-           
-       }
-
-
-       
     }
     catch (error) {
         return res.status(500).send({ status: false, message: error.message })
     }
 }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
 
 const getCart = async function (req, res) {
     try {
@@ -113,7 +113,7 @@ const getCart = async function (req, res) {
         }
         //validation ends
 
-        const findUser = await userModel.findById({ _id: userId })
+        const findUser = await user.findById({ _id: userId })
         if (!findUser) {
             return res.status(400).send({
                 status: false,
