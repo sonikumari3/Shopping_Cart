@@ -1,5 +1,5 @@
 const { default: mongoose } = require('mongoose')
-const { isValid, isValidRequestBody,isValidObjectId  } = require('../validations/validations')
+const { isValid, isValidRequestBody  } = require('../validations/validations')
 const product = require('../model/productModel')
 const user = require('../model/userModel')
 const cart = require('../model/cartModel')
