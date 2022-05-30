@@ -1,6 +1,6 @@
 const express = require('express')
 const { createCart, getCart, deleteCart } = require('../controller/cartController')
-const { createOrder } = require('../controller/orderControllers')
+const { createOrder, updateOrder } = require('../controller/orderControllers')
 const { createProduct, getProductByID, updateProduct, deleteProduct,getProductsByQuery } = require('../controller/productController')
 const { createUser, logIn, findProfile, updateProfile } = require('../controller/userControllers')
 const { authentication } = require('../middleware/auth')
@@ -31,6 +31,7 @@ router.delete('/users/:userId/cart',authentication,deleteCart)
 
 //feature 4
 router.post('/users/:userId/orders', authentication,createOrder)
+router.put('/users/:userId/orders', authentication,updateOrder)
 
 
 module.exports = router;

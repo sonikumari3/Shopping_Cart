@@ -92,4 +92,85 @@ const createOrder = async (req, res)=>{
         return res.status(500).send({ status: "error", message: error.message });
    }
 } 
-module.exports = {createOrder}
+
+
+const updateOrder = async (req, res)=>{
+    try{
+        let userId = req.params.userId
+        let tokenId = req.userId
+ 
+        if(!isValid(userId)){
+            return res.status(400).send({status : false, messsage : "user Id is missing in length"})
+        }
+ 
+        if(!mongoose.isValidObjectId(userId)){
+            return res.status(400).send({status : false, message : "Please provide a valid user Id"})
+        }
+ 
+        let findUser = await user.findById({_id : userId})
+        if(findUser){
+            if(tokenId != userId){
+                return res.status(401).send({status : false, message :"you are unauthorized to do this"})
+            }
+        }else{
+            return res.status(404).send({status : false, message : "No user with this id exists"})
+        }
+ 
+        let data = req.body
+ 
+        if(!isValidRequestBody(data)){
+            return res.status(400).send({status : false, message : "No input has been provided"})
+        }
+ 
+        let {orderId, status} = data
+        
+        if(!orderId){
+            return res.status(400).send({status : false, message : "orderId is a required field"})
+        }
+ 
+        if(!isValid(orderId)){
+            return res.status(400).send({status: false, message : "orderId is missing in length"})
+        }
+ 
+        if(mongoose.isValidObjectId(orderId)=== false){
+            return res.status(400).send({status : false, message : "please provide a valid orderId"})
+        }
+ 
+        if(status){
+            if(!isValidStatus(status)){
+                return res.status(400).send({status : false, message : " status can only be, 'pending', 'completed' or 'canceled"})
+            }
+        }
+ 
+        let findorder = await order.findById({_id : orderId})
+ 
+        if(!findorder){
+            return res.status(404).send({status : false, message : " No cart with this cart id exists"})
+        }
+ 
+        if(findorder.userId != userId){
+            return res.status(401).send({status : false, message : "This order does not belong to you"})
+        }
+
+        if(findorder.isDeleted){
+            return res.status(404).send({status : false, message : "deleted orders can't be updated"})
+        }
+
+        if(status == 'canceled'){
+            if(!findorder.cancellable){
+                return res.status(400).send({status : false, message : "this is not a cancellable order"})
+            }
+
+        }
+
+        let updateOrder = await order.findOneAndUpdate({userId : userId}, {$set :{status : data.status}}, {new : true}).select({_v: 0})
+        
+        return res.status(200).send({status : true, message : "order updated successfully", data : updateOrder})
+ 
+    } catch (error) {
+         return res.status(500).send({ status: "error", message: error.message });
+    }
+ }
+
+
+module.exports = {createOrder, updateOrder}
