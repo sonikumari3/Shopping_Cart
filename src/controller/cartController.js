@@ -9,7 +9,7 @@ const createCart = async (req, res) => {
         let userId = req.params.userId
         let tokenId = req.userId
         const body = req.body
-        
+        // const {items} =items
         const {productId, quantity } = body
         
  // Valid user or not 
@@ -66,13 +66,13 @@ if (!findCart) {
             quantity: quantity,
         }],
         totalPrice: findProduct.price * quantity,
+        // totalItems: items.length
         totalItems: 1
     }
 
     const createCart = await cart.create(data)
     return res.status(201).send({ status: true, message: "Cart created successfully", data: createCart })
-}
-    
+}   
 
 }
     catch (error) {
@@ -81,11 +81,6 @@ if (!findCart) {
     }
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
 
 const getCart = async function (req, res) {
     try {
