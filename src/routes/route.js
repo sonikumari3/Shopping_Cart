@@ -28,6 +28,8 @@ router.get('/users/:userId/cart',authentication ,getCart)
 router.delete('/users/:userId/cart',authentication,deleteCart)
 
 
+//feature 4
+router.post('/users/:userId/orders', authentication, )
 
 
 module.exports = router;
