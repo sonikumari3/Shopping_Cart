@@ -76,6 +76,10 @@ const isValidPassword = (value)=>{
     }
 }
 
+const isValidStatus = function(status) {
+    return ['pending', 'cancelled', 'completed'].indexOf(status) !== -1
+}
+
 
 module.exports = {
     isValid, 
@@ -87,4 +91,5 @@ module.exports = {
     isValidPincode,
     isValidPrice,
     isValidPassword,
+    isValidStatus
 }

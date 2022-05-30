@@ -43,7 +43,7 @@ const createCart = async (req, res) => {
        if(!productId){
            return res.status(400).send({status : false, message : "Product id is a required field"})
        }
-       if(!isValid(product)){
+       if(!isValid(productId)){
            return res.status(400).send({status : false, message : "Product id is missing in length"})
        }
        if(mongoose.isValidObjectId(productId)=== false){
@@ -81,7 +81,6 @@ const createCart = async (req, res) => {
        if(!findcart){
         let TotalItem = items.length
         let TotalPrice = findpro.price * items[0].quantity
-        
         let cartData = { 
             items: items, 
             totalPrice: TotalPrice, 
@@ -91,12 +90,13 @@ const createCart = async (req, res) => {
         
         let createCart = await cart.create(cartData)
         return res.status(201).send({ status: true, message: "success", data: createCart })
-       }else{
-        let amount = findcart.totalPrice + (findpro.price * items[0].quantity)
-        let totalItem = items.length + findcart.TotalItems
+       }
+       else{
+           let amount = findcart.totalPrice + (findpro.price * items[0].quantity)
+           let totalItem = items.length + findcart.TotalItems
 
-        let cartData = await cart.findOneAndUpdate({ userId: userId }, { $addToSet: { items: { $each: items } }, totalPrice:amount, totalItems: totalItem }, { new: true })
-        return res.status(201).send({ status: true, message: `product added in Your Cart Successfully`, data: cartData })
+           let cartData = await cart.findOneAndUpdate({ userId: userId }, { $addToSet: { items: { $each: items } }, totalPrice:amount, totalItems: totalItem }, { new: true })
+           return res.status(201).send({ status: true, message: `product added in Your Cart Successfully`, data: cartData })
        }
     }
     catch (error) {
@@ -179,7 +179,7 @@ const deleteCart = async function (req, res){
             return res.status(404).send({status: false,message:"User does not exist"})
         }
 
-        const deletedCart = await cart.findOneAndUpdate({userId:userId},{$set:{items:[],totalItems:0,totalprice:0}},{new:true})
+        const deletedCart = await cart.findOneAndUpdate({userId:userId},{$set:{items:[], totalItems:0, totalprice:0}},{new:true})
         
         if(deletedCart){
             return res.status(200).send({status:true, message: "All items in cart deleted Successfully",data:deletedCart})
