@@ -171,7 +171,7 @@ const getProductsByQuery = async (req,res)=>{
                 return res.status(400).send({status : false, message : "the size is missing in lenght"})
             }
     
-            filter['availableSizes'] = size
+            filter['availableSizes'] = size.toUpperCase()
         }
         
         if(priceGreaterThan){
@@ -212,7 +212,7 @@ const getProductsByQuery = async (req,res)=>{
             }
 
             let filterProduct = await product.find(filter).sort({price: priceSort})
-
+    
             if(filterProduct.length>0){
                 return res.status(200).send({status : false, message : "Success", data : filterProduct})
             }
@@ -222,7 +222,7 @@ const getProductsByQuery = async (req,res)=>{
         } 
         else{
             let findProduct = await product.find(filter)
-
+        
             if(findProduct.length>0){
                 return res.status(200).send({status : false, message : "Success", data : findProduct})
             }
