@@ -4,7 +4,6 @@ const product = require('../model/productModel')
 const user = require('../model/userModel')
 const cart = require('../model/cartModel')
 
-
 const createCart = async (req, res) => {
     try {
        let userId = req.params.userId
@@ -72,7 +71,7 @@ const createCart = async (req, res) => {
            return res.status.send({status : false, message : "The quantity must be a number"})
        }
 
-       if(quantity<1){
+       if(quantity<=1){
            return res.status(400).send({status : false, message : "quanity must be 1 or above"})
        }
 
@@ -91,6 +90,12 @@ const createCart = async (req, res) => {
         
         let createCart = await cart.create(cartData)
         return res.status(201).send({ status: true, message: "success", data: createCart })
+       }else{
+        let amount = findcart.totalPrice + (findpro.price * items[0].quantity)
+        let totalItem = items.length + findcart.TotalItems
+
+        let cartData = await cart.findOneAndUpdate({ userId: userId }, { $addToSet: { items: { $each: items } }, totalPrice:amount, totalItems: totalItem }, { new: true })
+        return res.status(201).send({ status: true, message: `product added in Your Cart Successfully`, data: cartData })
        }
     }
     catch (error) {
