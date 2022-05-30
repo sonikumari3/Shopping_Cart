@@ -49,7 +49,7 @@ const createCart = async (req, res) => {
             return res.status(400).send({ status: false, message: "Please provide quantity" })
         }
 
-        // find in Db    
+        // find in Db  
         const findUser = await user.findById({ _id: userId })
         console.log(findUser)
         if (!findUser) {
@@ -77,7 +77,7 @@ const createCart = async (req, res) => {
         const createCart = await cart.create(data)
         return res.status(201).send({ status: true, message: "Cart created successfully", data: createCart })
     } else{
-         let total = totalPrice + (findProduct.price * quantity)
+         let total = findCart.totalPrice + (findProduct.price * quantity)
     }
     
 
@@ -113,8 +113,6 @@ const getCart = async function (req, res) {
             res.status(401).send({ status: false, message: "Unauthorized access! User's info doesn't match" });
             return
         }
-
-        
         
         //validation end
         const findUser = await user.findById({ _id: userId })
