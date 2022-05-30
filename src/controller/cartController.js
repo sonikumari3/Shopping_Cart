@@ -150,6 +150,10 @@ const deleteCart = async function (req, res){
 
         let tokenId= req.userId
 
+        if(!isValid(userId)){
+            return res.status(400).send({ status: false, message: "userId is missing in length" })
+        }
+
         if (!mongoose.isValidObjectId(userId)) {
             return res.status(400).send({ status: false, message: "Please provide valid User Id" })
         }
@@ -159,19 +163,26 @@ const deleteCart = async function (req, res){
             return
          }
 
-          const findUser = await userModel.findById(userId)
+        const findUser = await user.findById(userId)
 
-          if (!findUser){
-             return res.status(400).send({status: false,message:"User does not exist"})
-          }
-
-          const deletedCart = await cart.findOneAndUpdate({userId:userId},{$set:{items:[],totalItems:0,totalprice:0}},{new:true})
-                return res.status(200).send({status:true, message: "All items in cart deleted Successfully",data:deletedCart}) 
-
-               } catch (error) {
-        return res.status(500).send({ status: false, message: error.message })
-         }
+        if (!findUser){
+            return res.status(404).send({status: false,message:"User does not exist"})
         }
+
+        const deletedCart = await cart.findOneAndUpdate({userId:userId},{$set:{items:[],totalItems:0,totalprice:0}},{new:true})
+        
+        if(deletedCart){
+            return res.status(200).send({status:true, message: "All items in cart deleted Successfully",data:deletedCart})
+        }
+        else{
+            return res.status(404).send({status: false,message:"cart for this user does not yet exists"})
+        }
+
+        } 
+        catch (error) {
+            return res.status(500).send({ status: false, message: error.message })
+        }
+    }
 
 
 
