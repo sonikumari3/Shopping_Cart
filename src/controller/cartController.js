@@ -76,30 +76,105 @@ const createCart = async (req, res) => {
        }
 
        let findcart = await cart.findOne({userId : userId})
-
+       let TotalItems = items.length
+       let TotalPrice = findpro.price * items[0].quantity
        if(!findcart){
-        let TotalItem = items.length
-        let TotalPrice = findpro.price * items[0].quantity
+       
         let cartData = { 
             items: items, 
             totalPrice: TotalPrice, 
-            totalItems: TotalItem, 
+            totalItems: TotalItems, 
             userId: userId 
         }
         
         let createCart = await cart.create(cartData)
         return res.status(201).send({ status: true, message: "success", data: createCart })
        }else{
-        let addingCart = await cartModel.findOneAndUpdate({ userId: userId }, { $push: { items: data.items }, $inc: { totalPrice: findcart.totalPrice, totalItems: data.totalItems } }, { new: true }).select({ "__v": 0 })
+        let addingCart = await cart.findOneAndUpdate({ userId: userId }, { $push: { items: data.items }, $inc: { totalPrice: findcart.totalPrice, totalItems: data.totalItems } }, { new: true }).select({ "__v": 0 })
         return res.status(201).send({ status: true, message: `product added in Your Cart Successfully`, data: addingCart })
        }
     }
     catch (error) {
+        console.log(error)
+
         return res.status(500).send({ status: false, message: error.message })
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*************************************************************************************************/
+
+const updateCart = async function(req,res){
+    try{
+        let userId = req.params.userId
+        let tokenId = req.userId
+        let data = req.body
+      
+        if(!userId){
+            return res.status(400).send({status : false, message : "user Id Must be provided to do this action"})
+        }
+ 
+        if(!isValid(userId)){
+            return res.status(400).send({status : false, message : "user id is missing in length"})
+        }
+ 
+        if(mongoose.isValidObjectId(userId) === false){
+            return res.status(400).send({status : false, message : "Please provide a valid user ID"})
+        }
+        let findUser = await user.findById({_id:userId})
+        if(!findUser){
+            return res.status(404).send({status : false, message :"the user does not exists"})
+        }
+ 
+        if(tokenId !== userId){
+         return res.status(401).send({status : false, message: "You are not authorized to do this action"})
+        }
+        let {cartId,productId,removeProduct} = data
+
+        if(!isValidRequestBody(data)){
+            return res.status(400).send({status:false,message:"Please provide something to update"})
+        }
+        if(cartId){
+            if(!isValid(cartId)){
+                return res.status(400).send({status :false , message:"cart Id missing in a length"})
+            }
+            if(!mongoose.isValidObjectId(cartId)){
+                return res.status(400).send({status : false,message:"Please provide valid object id"})
+            }
+            let findCartId = await cart.findById({_id:cartId,isDeleted:false})
+            if(!findCartId){
+                return res.status(404).send({status : false ,message:'cart id does not exists'})
+            }
+        }
+        if(productId){
+            if(!isValid(productId)){
+                return res.status(400).send({status :false , message:"cart Id missing in a length"})
+            }
+            if(!mongoose.isValidObjectId(productId)){
+                return res.status(400).send({status : false,message:"Please provide valid object id"})
+            }
+            let findProductId = await product.findById({_id:productId,isDeleted:false})
+            if(!findProductId){
+                return res.status(404).send({status : false ,message:'cart id does not exists'})
+            }
+        }
+        if(removeProduct){
+
+            let updateCart = await cart.findOneAndUpdate({userId :userId},{$set:{...data},$dec:{totalItems:1}},{new:true})
+         }
+
+
+
+
+    }
+    catch (error) {
+        console.log(error)
+        return res.status(500).send({ status: false, message: error.message })
+    }
+}
+
+
+
+/*************************************************************************************************/
 
 const getCart = async function (req, res) {
     try {
