@@ -120,108 +120,131 @@ const createCart = async (req, res) => {
 
 /**************************************Update Cart Api****************************************************/
 
-const updateCart = async function(req,res){
-    try{
-        let userId = req.params.userId
-        let tokenId = req.userId
+const updateCart = async function (req, res) {
+    try {
+
+        const userId = req.params.userId
         let data = req.body
-      
-        if(!userId){
-            return res.status(400).send({status : false, message : "user Id Must be provided to do this action"})
-        }
- 
+        let tokenId = req.userId
+
+        let { cartId, productId, removeProduct } = data
+        let userToken = req.userId
+        // user validation
         if(!isValid(userId)){
-            return res.status(400).send({status : false, message : "user id is missing in length"})
+            return res.status(400).send({status : false, message : "user Id is missing in length"})
         }
- 
-        if(mongoose.isValidObjectId(userId) === false){
-            return res.status(400).send({status : false, message : "Please provide a valid user ID"})
-        }
-        
-        let findUser = await user.findById({_id:userId})
-        if(!findUser){
-            return res.status(404).send({status : false, message :"the user does not exists"})
-        }
- 
-        if(tokenId !== userId){
-         return res.status(401).send({status : false, message: "You are not authorized to do this action"})
-        }
-        let {cartId,productId,removeProduct} = data
 
-        if(!isValidRequestBody(data)){
-            return res.status(400).send({status:false,message:"Please provide something to update"})
+        if (!mongoose.isValidObjectId(userId)) {
+            return res.status(400).send({ status: false, message: "user id is not valid" })
         }
-        if(cartId){
-            if(!isValid(cartId)){
-                return res.status(400).send({status :false , message:"cart Id missing in a length"})
-            }
-            if(!mongoose.isValidObjectId(cartId)){
-                return res.status(400).send({status : false,message:"Please provide valid object id"})
-            }
-            
+        const validUser = await user.findById(userId);
+        if (!validUser) {
+            return res.status(404).send({ status: false, message: "User not present" })
         }
-        
-        let findcart = await cart.findById({_id:cartId})
-            if(!findcart){
-                return res.status(404).send({status : false ,message:'cart id does not exists'})
-            }
+         //Authorisation
+        if (tokenId !== userId) {
+            return res.status(403).send({ status: false, message: "Unauthorized user" })
+        }
 
-        if(productId){
-            if(!isValid(productId)){
-                return res.status(400).send({status :false , message:"cart Id missing in a length"})
-            }
-            if(!mongoose.isValidObjectId(productId)){
-                return res.status(400).send({status : false,message:"Please provide valid object id"})
-            }
-            
+        // checking data in request body
+
+        if (!isValidRequestBody(data)) {
+            return res.status(400).send({ status: false, message: "Please enter details to update the document" })
+
         }
+        // cart validation
         
-        let findProductId = await product.findById({_id:productId,isDeleted:false})
-            if(!findProductId){
-                return res.status(404).send({status : false ,message:'cart id does not exists'})
-            }
+        if(!cartId){
+            return res.status(400).send({status : flase, message : "cart id is a required field"})
+        }
+
+        if (!isValid(cartId)) {
+            return res.status(400).send({ status: false, message: "cart id is missing in length" })
+        }
+
+        if (!mongoose.isValidObjectId(cartId)) {
+            return res.status(400).send({ status: false, message: "cart id is not valid" })
+        }
+
+        const validCart = await cart.findOne({ _id: cartId, userId: userId });
+        if (!validCart) {
+            return res.status(404).send({ status: false, message: "Cart with this parameters not present" })
+        }
+        // product validation
+
+        if(!productId){
+            return res.status(400).send({status : false, message : "Product id is required to this action"})
+        }
+
+        if (!isValid(productId)) {
+            return res.status(400).send({ status: false, message: "product id is missing in length" })
+        }
+
+        if (!mongoose.isValidObjectId(productId)) {
+            return res.status(400).send({ status: false, message: "product id is not valid" })
+        }
+    
+        const validProduct = await product.findOne({ _id: productId, isDeleted: false });
+        if (!validProduct) {
+            return res.status(404).send({ status: false, message: "Product not present" })
+        }
+
+        let items = validCart.items
+        
+        let productArr = items.filter(x => x.productId.toString() == productId)
+        
+        if (productArr.length == 0) {
+            return res.status(404).send({ status: false, message: "Product is not present in cart" })
+        }
+
+        let index = items.indexOf(productArr[0])
+
+        if(!removeProduct){
+            return res.status(400).send({ status: false, message: "remove Product is a required field" })
+        }
+
+        if (!isValid(removeProduct)) {
+            return res.status(400).send({ status: false, message: "Please enter removeProduct is missing in length" })
+        }
+
+        if (!([0, 1].includes(removeProduct))) {
+            return res.status(400).send({ status: false, message: "RemoveProduct field can have only 0 or 1 value" })
+        }
+
+
+        if (removeProduct == 0) {
+            
+            validCart.totalPrice = (validCart.totalPrice - (validProduct.price * validCart.items[index].quantity)).toFixed(2)
+            validCart.items.splice(index, 1)
+
+            validCart.totalItems = validCart.items.length
+            validCart.save()
+
+        }
 
         if (removeProduct == 1) {
-            for (let i = 0; i < findcart.items.length; i++) {
-                if (findcart.items[i].productId == productId) {
-                    const updatedPrice = findcart.totalPrice - product.price
-                    findcart.items[i].quantity = findcart.items[i].quantity - 1
-                    if (findcart.items[i].quantity > 0) {
-                        const Data = await cart.findOneAndUpdate({ _id: cartId }, { items: findcart.items, totalPrice: updatedPrice }, { new: true })
-                        return res.status(200).send({ status: true, message:"Item Removed", data: Data })
-                    }
-                    else {
-                        const totalItems1 = findcart.totalItems - 1
-                        findcart.items.splice(i, 1)
-
-                        const data = await cart.findOneAndUpdate({ _id: cartId }, { items: findcart.items, totalItems: totalItems1, totalPrice: updatedPrice }, { new: true })
-                        return res.status(200).send({ status: true, message: "Product Removed", data:data })
-
-                    }
-                }
+          
+            validCart.items[index].quantity -= 1
+            validCart.totalPrice = (validCart.totalPrice - validProduct.price).toFixed(2)
+            
+            if (validCart.items[index].quantity == 0) {
+                validCart.items.splice(index,1)
 
             }
-        }
-        if (removeProduct == 0) {
-            for (let i = 0; i < findcart.items.length; i++) {
-                if (findcart.items[i].productId == productId) {
-                    const updatedPrice = findcart.totalPrice - (product.price * findcart.items[i].quantity)
-                    const TotalItems = findcart.totalItems - 1
-                    findcart.items.splice(i, 1)
-                    const result = await cart.findOneAndUpdate({ _id: cartId }, { items: findcart.items, totalItems: TotalItems, totalPrice: updatedPrice }, { new: true })
-                    return res.status(200).send({ status: true, message:"Product Was Removed From The Cart", data: result })
+            validCart.totalItems = validCart.items.length
 
-                }
-            }
+            validCart.save()
+
         }
-  
+        
+        return res.status(200).send({ status: true, data: validCart })
+
     }
-    catch (error) {
-        console.log(error)
-        return res.status(500).send({ status: false, message: error.message })
+    catch (err) {
+        return res.status(500).send({ status: false, message: err.message })
+
     }
 }
-
 
 /**************************************Get Cart Api****************************************************/
 
