@@ -81,6 +81,7 @@ const createCart = async (req, res) => {
     
        let TotalItems = items.length
        let TotalPrice = findpro.price * items[0].quantity
+  
        if(!findcart){
        
         let cartData = { 
@@ -95,8 +96,6 @@ const createCart = async (req, res) => {
        }
        else{
        
-        
-        
         const Amount = findcart.totalPrice + (findpro.price * items[0].quantity)
         
         for (let i = 0; i < findcart.items.length; i++) {
@@ -138,6 +137,7 @@ const updateCart = async function(req,res){
         if(mongoose.isValidObjectId(userId) === false){
             return res.status(400).send({status : false, message : "Please provide a valid user ID"})
         }
+        
         let findUser = await user.findById({_id:userId})
         if(!findUser){
             return res.status(404).send({status : false, message :"the user does not exists"})
@@ -173,13 +173,14 @@ const updateCart = async function(req,res){
             if(!mongoose.isValidObjectId(productId)){
                 return res.status(400).send({status : false,message:"Please provide valid object id"})
             }
-            let findProductId = await product.findById({_id:productId,isDeleted:false})
+            
+        }
+        
+        let findProductId = await product.findById({_id:productId,isDeleted:false})
             if(!findProductId){
                 return res.status(404).send({status : false ,message:'cart id does not exists'})
             }
 
-        }
-        
         if (removeProduct == 1) {
             for (let i = 0; i < findcart.items.length; i++) {
                 if (findcart.items[i].productId == productId) {
