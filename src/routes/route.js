@@ -1,5 +1,5 @@
 const express = require('express')
-const { createCart, getCart, deleteCart } = require('../controller/cartController')
+const { createCart, getCart, deleteCart, updateCart } = require('../controller/cartController')
 const { createOrder, updateOrder } = require('../controller/orderControllers')
 const { createProduct, getProductByID, updateProduct, deleteProduct,getProductsByQuery } = require('../controller/productController')
 const { createUser, logIn, findProfile, updateProfile } = require('../controller/userControllers')
@@ -26,6 +26,7 @@ router.delete('/products/:productId', deleteProduct)
 
 router.post('/users/:userId/cart',authentication,createCart)
 router.get('/users/:userId/cart',authentication ,getCart)
+router.put('/users/:userId/cart',authentication ,updateCart)
 router.delete('/users/:userId/cart',authentication,deleteCart)
 
 

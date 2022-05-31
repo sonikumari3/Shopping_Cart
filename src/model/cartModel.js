@@ -17,20 +17,17 @@ const cartSchema = new mongoose.Schema({
         },
         quantity: {
             type: Number,
-            require: true,
-            minLen: 1
+            require: true
         },
         _id : false
     }],
 
     totalPrice: {
-        type: Number,
-        required: true
+        type: Number
     },
 
     totalItems: {
-        type: Number,
-        required: true
+        type: Number
     }
 
 }, { timestamps: true })

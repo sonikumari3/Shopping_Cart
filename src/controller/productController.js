@@ -3,6 +3,7 @@ const {isValidRequestBody, isValid, isValidName, isValidPrice} = require("../val
 const {uploadFile} = require("../middleware/aws")
 const { default: mongoose } = require('mongoose')
 
+/************************************** Create Product Api****************************************************/
 
 const createProduct = async (req,res)=>{
     try{
@@ -31,7 +32,6 @@ const createProduct = async (req,res)=>{
                 return res.status(409).send({status : false, message : "This title is already being used"})
             }
         }
-
         if(!description){
             return res.status(400).send({status : false, message : "description is a required field"})
         }else{
@@ -144,6 +144,7 @@ const createProduct = async (req,res)=>{
     }
 }
 
+/************************************** Get Product By Query Api****************************************************/
 
 const getProductsByQuery = async (req,res)=>{
     try{
@@ -238,7 +239,7 @@ const getProductsByQuery = async (req,res)=>{
 }
 
 
-
+/************************************** Get By ProductId Api****************************************************/
 
 const getProductByID = async (req,res)=>{
     try{
@@ -271,6 +272,7 @@ const getProductByID = async (req,res)=>{
     }
 }
 
+/************************************** Update Product Api****************************************************/
 
 const updateProduct  = async (req, res)=>{
     try{
@@ -457,6 +459,8 @@ const updateProduct  = async (req, res)=>{
         return res.status(500).send({ status: false, message: error.message })      
     }
 }
+
+/************************************** Delete Product Api****************************************************/
 
 const deleteProduct = async (req, res)=>{
     try{
