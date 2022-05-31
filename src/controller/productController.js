@@ -32,7 +32,6 @@ const createProduct = async (req,res)=>{
                 return res.status(409).send({status : false, message : "This title is already being used"})
             }
         }
-
         if(!description){
             return res.status(400).send({status : false, message : "description is a required field"})
         }else{

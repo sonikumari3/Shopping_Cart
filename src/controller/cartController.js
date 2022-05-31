@@ -78,6 +78,7 @@ const createCart = async (req, res) => {
        }
 
        let findcart = await cart.findOne({userId : userId})
+    
        let TotalItems = items.length
        let TotalPrice = findpro.price * items[0].quantity
        if(!findcart){
@@ -91,9 +92,24 @@ const createCart = async (req, res) => {
         
         let createCart = await cart.create(cartData)
         return res.status(201).send({ status: true, message: "success", data: createCart })
-       }else{
-        let addingCart = await cart.findOneAndUpdate({ userId: userId }, { $push: { items: data.items }, $inc: { totalPrice: findcart.totalPrice, totalItems: data.totalItems } }, { new: true }).select({ "__v": 0 })
-        return res.status(201).send({ status: true, message: `product added in Your Cart Successfully`, data: addingCart })
+       }
+       else{
+       
+        
+        
+        const Amount = findcart.totalPrice + (findpro.price * items[0].quantity)
+        
+        for (let i = 0; i < findcart.items.length; i++) {
+            if (findcart.items[i].productId == items[0].productId) {
+                findcart.items[i].quantity = findcart.items[i].quantity + items[0].quantity
+                const changecart = await cart.findOneAndUpdate({ userId: userId }, { items: findcart.items, totalPrice:Amount }, { new: true })
+                return res.status(201).send({ status: true, message: `product added In Your Cart Successfully`, data:changecart })
+            }
+        }
+        const totalItem = items.length + findcart.totalItems
+
+        const cartData = await cart.findOneAndUpdate({ userId: userId }, { $addToSet: { items: { $each: items } }, totalPrice:Amount, totalItems: totalItem }, { new: true })
+        return res.status(201).send({ status: true, message: `product added in Your Cart Successfully`, data: cartData })
        }
     }
     catch (error) {
@@ -142,11 +158,14 @@ const updateCart = async function(req,res){
             if(!mongoose.isValidObjectId(cartId)){
                 return res.status(400).send({status : false,message:"Please provide valid object id"})
             }
-            let findCartId = await cart.findById({_id:cartId,isDeleted:false})
-            if(!findCartId){
+            
+        }
+        
+        let findcart = await cart.findById({_id:cartId})
+            if(!findcart){
                 return res.status(404).send({status : false ,message:'cart id does not exists'})
             }
-        }
+
         if(productId){
             if(!isValid(productId)){
                 return res.status(400).send({status :false , message:"cart Id missing in a length"})
@@ -159,14 +178,40 @@ const updateCart = async function(req,res){
                 return res.status(404).send({status : false ,message:'cart id does not exists'})
             }
         }
-        if(removeProduct){
+        if (removeProduct == 1) {
+            for (let i = 0; i < findcart.items.length; i++) {
+                if (findcart.items[i].productId == productId) {
+                    const updatedPrice = findcart.totalPrice - product.price
+                    findcart.items[i].quantity = findcart.items[i].quantity - 1
+                    if (findcart.items[i].quantity > 0) {
+                        const Data = await cart.findOneAndUpdate({ _id: cartId }, { items: findcart.items, totalPrice: updatedPrice }, { new: true })
+                        return res.status(200).send({ status: true, message:"Item Removed", data: Data })
+                    }
+                    else {
+                        const totalItems1 = findcart.totalItems - 1
+                        findcart.items.splice(i, 1)
 
-            let updateCart = await cart.findOneAndUpdate({userId :userId},{$set:{...data},$dec:{totalItems:1}},{new:true})
-         }
+                        const data = await cart.findOneAndUpdate({ _id: cartId }, { items: findcart.items, totalItems: totalItems1, totalPrice: updatedPrice }, { new: true })
+                        return res.status(200).send({ status: true, message: "Product Removed", data:data })
 
+                    }
+                }
 
+            }
+        }
+        if (removeProduct == 0) {
+            for (let i = 0; i < findcart.items.length; i++) {
+                if (findcart.items[i].productId == productId) {
+                    const updatedPrice = findcart.totalPrice - (product.price * findcart.items[i].quantity)
+                    const TotalItems = findcart.totalItems - 1
+                    findcart.items.splice(i, 1)
+                    const result = await cart.findOneAndUpdate({ _id: cartId }, { items: findcart.items, totalItems: TotalItems, totalPrice: updatedPrice }, { new: true })
+                    return res.status(200).send({ status: true, message:"Product Was Removed From The Cart", data: result })
 
-
+                }
+            }
+        }
+  
     }
     catch (error) {
         console.log(error)
@@ -269,4 +314,4 @@ const deleteCart = async function (req, res){
 
 
 
-module.exports = { createCart, getCart , deleteCart }
+module.exports = { createCart, getCart ,updateCart, deleteCart }
