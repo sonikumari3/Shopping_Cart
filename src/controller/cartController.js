@@ -78,6 +78,8 @@ const createCart = async (req, res) => {
        let findcart = await cart.findOne({userId : userId})
        let TotalItems = items.length
        let TotalPrice = findpro.price * items[0].quantity
+
+      
        if(!findcart){
        
         let cartData = { 
@@ -89,9 +91,6 @@ const createCart = async (req, res) => {
         
         let createCart = await cart.create(cartData)
         return res.status(201).send({ status: true, message: "success", data: createCart })
-       }else{
-        let addingCart = await cart.findOneAndUpdate({ userId: userId }, { $push: { items: data.items }, $inc: { totalPrice: findcart.totalPrice, totalItems: data.totalItems } }, { new: true }).select({ "__v": 0 })
-        return res.status(201).send({ status: true, message: `product added in Your Cart Successfully`, data: addingCart })
        }
     }
     catch (error) {
@@ -100,6 +99,7 @@ const createCart = async (req, res) => {
         return res.status(500).send({ status: false, message: error.message })
     }
 }
+
 
 /*************************************************************************************************/
 
@@ -161,9 +161,6 @@ const updateCart = async function(req,res){
 
             let updateCart = await cart.findOneAndUpdate({userId :userId},{$set:{...data},$dec:{totalItems:1}},{new:true})
          }
-
-
-
 
     }
     catch (error) {
