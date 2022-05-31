@@ -160,7 +160,7 @@ const updateCart = async function(req,res){
             }
             
         }
-        
+
         let findcart = await cart.findById({_id:cartId})
             if(!findcart){
                 return res.status(404).send({status : false ,message:'cart id does not exists'})
@@ -177,7 +177,9 @@ const updateCart = async function(req,res){
             if(!findProductId){
                 return res.status(404).send({status : false ,message:'cart id does not exists'})
             }
+
         }
+        
         if (removeProduct == 1) {
             for (let i = 0; i < findcart.items.length; i++) {
                 if (findcart.items[i].productId == productId) {
