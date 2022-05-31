@@ -4,6 +4,7 @@ const user = require("../model/userModel")
 const cart = require("../model/cartModel")
 const { isValid, isValidRequestBody, isValidStatus } = require("../validations/validations")
 
+/**************************************Create Order Api****************************************************/
 
 const createOrder = async (req, res)=>{
    try{
@@ -93,6 +94,7 @@ const createOrder = async (req, res)=>{
    }
 } 
 
+/**************************************Update Order Api****************************************************/
 
 const updateOrder = async (req, res)=>{
     try{

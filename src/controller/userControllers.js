@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 const { uploadFile } = require("../middleware/aws");
 const { isValidRequestBody, isValid, isValidName, isValidEmail, isValidPhone, isValidCity, isValidPincode, isValidPassword } = require("../validations/validations");
 
+/**************************************Create User Api****************************************************/
+
 const createUser = async (req, res) => {
     try {
         let data = req.body;
@@ -194,6 +196,7 @@ const createUser = async (req, res) => {
     }
 };
 
+/**************************************Login User Api****************************************************/
 const logIn = async (req, res) => {
     try {
         let data = req.body;
@@ -246,6 +249,8 @@ const logIn = async (req, res) => {
     }
 };
 
+/**************************************Find User Profile Api****************************************************/
+
 const findProfile = async (req, res) => {
     try {
         let userId = req.params.userId;
@@ -273,6 +278,8 @@ const findProfile = async (req, res) => {
         return res.status(500).send({ status: false, message: error.message });
     }
 };
+
+/**************************************Update User Profile Api****************************************************/
 
 const updateProfile = async (req, res) => {
     try {

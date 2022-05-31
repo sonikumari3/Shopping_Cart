@@ -4,6 +4,8 @@ const product = require('../model/productModel')
 const user = require('../model/userModel')
 const cart = require('../model/cartModel')
 
+/**************************************Create Cart Api****************************************************/
+
 const createCart = async (req, res) => {
     try {
        let userId = req.params.userId
@@ -101,7 +103,7 @@ const createCart = async (req, res) => {
     }
 }
 
-/*************************************************************************************************/
+/**************************************Update Cart Api****************************************************/
 
 const updateCart = async function(req,res){
     try{
@@ -173,8 +175,7 @@ const updateCart = async function(req,res){
 }
 
 
-
-/*************************************************************************************************/
+/**************************************Get Cart Api****************************************************/
 
 const getCart = async function (req, res) {
     try {
@@ -222,6 +223,8 @@ const getCart = async function (req, res) {
         return res.status(500).send({ status: false, message: error.message })
     }
 }
+
+/**************************************Delete Cart Api****************************************************/
 
 const deleteCart = async function (req, res){
 
