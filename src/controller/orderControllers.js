@@ -147,7 +147,7 @@ const updateOrder = async (req, res)=>{
         let findorder = await order.findById({_id : orderId})
  
         if(!findorder){
-            return res.status(404).send({status : false, message : " No cart with this cart id exists"})
+            return res.status(404).send({status : false, message : " No Order with this order id exists"})
         }
  
         if(findorder.userId != userId){

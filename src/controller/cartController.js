@@ -31,14 +31,15 @@ const createCart = async (req, res) => {
            return res.status(400).send({status : false, message : "Please provide a valid user ID"})
        }
 
-       if(TokenId !== userId){
-        return res.status(401).send({status : false, message: "You are not authorized to do this action"})
-       }
 
        let findUser = await user.findById({_id : userId})
 
        if(!findUser){
            return res.status(404).send({status : false, message :"the user does not exists"})
+       }
+       
+       if(TokenId !== userId){
+        return res.status(401).send({status : false, message: "You are not authorized to do this action"})
        }
 
        if(!productId){
@@ -73,7 +74,7 @@ const createCart = async (req, res) => {
            return res.status.send({status : false, message : "The quantity must be a number"})
        }
 
-       if(quantity<=1){
+       if(quantity  < 1 ){
            return res.status(400).send({status : false, message : "quanity must be 1 or above"})
        }
 

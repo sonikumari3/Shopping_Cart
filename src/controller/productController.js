@@ -7,8 +7,7 @@ const { default: mongoose } = require('mongoose')
 
 const createProduct = async (req,res)=>{
     try{
-        let data = JSON.parse(JSON.stringify(req.body))
-        console.log(data)
+        let data =req.body
         let {title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments}= data
 
         if(! isValidRequestBody(data)){
@@ -261,7 +260,7 @@ const getProductByID = async (req,res)=>{
         }
         
         if(findProduct.isDeleted){
-            return res.status(404).send({status : false, message : "This product does not exists anymore"})
+            return res.status(404).send({status : false, message : "This product is deleted"})
         }
         else{
             return res.status(200).send({status : true, message : "success", data : findProduct})
@@ -277,7 +276,7 @@ const getProductByID = async (req,res)=>{
 const updateProduct  = async (req, res)=>{
     try{
 
-        let data = JSON.parse(JSON.stringify(req.body))
+        let data = req.body
 
         if(!isValidRequestBody(data)){
             return res.status(400).send({status : false, message : "No input has been provided"})
@@ -490,7 +489,7 @@ const deleteProduct = async (req, res)=>{
 
         let deleteProduct = await product.findOneAndUpdate({_id : id}, {$set : {isDeleted : true}, deletedAt : Date.now()}, {new : true, upsert: true})
 
-        return res.status(200).send({status : true, message : "Product deleted successfully", data : deleteProduct})
+        return res.status(200).send({status : true, message : "Product deleted successfully"})
 
     }catch (error) {
         return res.status(500).send({ status: false, message: error.message })      

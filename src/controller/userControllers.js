@@ -266,7 +266,6 @@ const findProfile = async (req, res) => {
         if (!validUserId) {
             return res.status(400).send({ status: false, message: "please Provide a valid object Id" });
         }
-
         let findUser = await user.findOne({ _id: userId });
 
         if (!findUser) {
@@ -283,7 +282,8 @@ const findProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
     try {
-        let data = JSON.parse(JSON.stringify(req.body))
+        let data =req.body
+
         let id = req.params.userId;
 
         let { fname, lname, email, password, phone, address } = data;
@@ -433,7 +433,7 @@ const updateProfile = async (req, res) => {
                 }
 
                 if (!isValid(shipping.pincode)) {
-                    return res.status(400).send({ status: false, message: "shipping street is required" });
+                    return res.status(400).send({ status: false, message: "shipping pincode is required" });
                 }
 
                 //applicable only for numeric values and extend to be 6 characters only--
@@ -462,7 +462,7 @@ const updateProfile = async (req, res) => {
                 }
 
                 if (!isValid(billing.pincode)) {
-                    return res.status(400).send({ status: false, message: "billing street is required" });
+                    return res.status(400).send({ status: false, message: "billing pincode is required" });
                 }
 
                 //applicable only for numeric values and extend to be 6 characters only--
