@@ -207,7 +207,7 @@ const getProductsByQuery = async (req,res)=>{
         }
 
         if(priceSort){
-            if(priceSort != 1 || priceSort != -1){
+            if(!(priceSort != 1 || priceSort != -1)){
                 return res.status(400).send({status : false, message : "Price sort only takes 1 or -1 as a value" })
             }
 

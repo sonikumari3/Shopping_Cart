@@ -211,6 +211,11 @@ const logIn = async (req, res) => {
                 return res.status(400).send({ status: false, message: "please provide a valid email" });
             }
         }
+        if (!password) {
+            
+                return res.status(400).send({ status: false, message: "please provide password" });
+            
+        }
 
         if (!isValidPassword(password)) {
             return res.status(400).send({ status: false, message: "password should be 8-15 characters long" });

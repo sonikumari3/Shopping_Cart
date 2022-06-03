@@ -158,8 +158,8 @@ const updateOrder = async (req, res)=>{
             return res.status(404).send({status : false, message : "deleted orders can't be updated"})
         }
 
-        if(status == 'canceled'){
-            if(!findorder.cancellable){
+        if(status == 'cancelled'){
+            if(findorder.cancellable == false){
                 return res.status(400).send({status : false, message : "this is not a cancellable order"})
             }
 
