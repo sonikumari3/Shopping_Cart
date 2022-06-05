@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const route = require('./routes/route.js');
 const { default: mongoose } = require('mongoose');
 const app = express();
-const multer = require('multer')
+const multer = require('multer') //allows us to accept multiple type of data
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

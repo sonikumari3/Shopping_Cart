@@ -238,7 +238,7 @@ const getProductsByQuery = async (req,res)=>{
 }
 
 
-/************************************** Get By ProductId Api****************************************************/
+/************************************** Get By ProductId Api ****************************************************/
 
 const getProductByID = async (req,res)=>{
     try{
